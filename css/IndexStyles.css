@@ -1,0 +1,109 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f7f9fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+p {
+    text-align: center;
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #eee;
+    margin: 20px 0;
+}
+
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #505050;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 12px ;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0px 20px 10px -20px rgba(0,0,0,0.45) inset,
+-20px 0px 10px -20px rgba(0,0,0,0.45) inset;
+    
+    
+  }
+
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    border-color: #007bff;
+    background-color: #fff;
+    outline: none;
+}
+
+button {
+
+    width: 48%;
+    padding: 12px ;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0px 20px 10px -20px rgba(0,0,0,0.45) inset,
+-20px 0px 10px -20px rgba(0,0,0,0.45) inset;
+}
+
+.cancelbtn {
+    background-color: #719af3;
+    color: white;
+    float: left;
+}
+
+.signupbtn {
+    background-color: #003584;
+    color: white;
+    float: right;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+button:hover {
+    opacity: 0.9;
+}

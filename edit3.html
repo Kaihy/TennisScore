@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Match Display</title>
+    <link rel="stylesheet" href="css/EditStyles.css">
+    <!-- Include Handlebars.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+</head>
+<body>
+    <!-- Handlebars template -->
+    <script id="matches-template" type="text/x-handlebars-template">
+    <div class="CourtBox">    
+        <div class="CourtData">
+            <span class="Courtnumber">Courtnumber: {{courtnumber}}</span>
+            <span class="Subinfos"> 
+            <span>ID: {{id}}</span>
+            <span>Spielklasse: {{spielklasse}}</span>
+                <span>Altersklasse: {{altersklasse}}</span>
+                <span id="statusText">{{spielstatus}}</span>
+                <select class="DropDownOptions" id="statusDropdown" style="display: none;">
+                    <option value="Im Gange">Im Gange</option>
+                    <option value="Unterbrochen">Unterbrochen</option>
+                </select>
+                <button class="editButton" id="editButton" onclick="enableStatusEdit()">Edit Spielstatus</button>
+                <button class="saveButton" id="saveButton" onclick="saveStatusEdit()" style="display: none;">Save</button>
+            </span>
+
+
+        <table class="CourtTable">
+            <thead>
+                <tr class="DisplayGameTitles">
+                    <th colspan="1">Player</th>
+                    <th colspan="1">Set</th>
+                    <th colspan="3">Games</th>
+                    <th colspan="1">Points</th>
+                </tr>
+                <tr class="DisplayGameNumbers">
+                    <th></th>
+                    <th></th>
+                    <th>3</th>
+                    <th>2</th>
+                    <th>1</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr >
+                    <td id="spieler1" onclick="editName('spieler1')" class="spielerfeld">{{spieler1}}</td>
+                    <td id="spieler1_satz" class="spielwerte">{{spieler1_satz}}</td>
+                    <td id="spieler1_spiel3" class="spielwerte">{{spieler1_spiel3}}</td>
+                    <td id="spieler1_spiel2" class="spielwerte">{{spieler1_spiel2}}</td>
+                    <td id="spieler1_spiel" class="spielwerte">{{spieler1_spiel}}</td>
+                    <td id="spieler1_punkte" class="spielwertePunkte">{{spieler1_punkte}}</td>
+                   
+                  
+                        <td id="serve1" onclick="toggleServe('spieler1')"class="serveCell">  
+                        {{#if (eq serve1 1)}}<img src="/Images/tennisball.webp" class="serveImage">{{/if}}
+                    </td>
+                </tr>
+                <td class="spielerverein">{{spieler1_verein}}</td>
+                <tr >
+                    <td id="spieler2" onclick="editName('spieler2')" class="spielerfeld">{{spieler2}}</td>
+                    <td id="spieler2_satz" class="spielwerte">{{spieler2_satz}}</td>
+                    <td id="spieler2_spiel3" class="spielwerte">{{spieler2_spiel3}}</td>
+                    <td id="spieler2_spiel2" class="spielwerte">{{spieler2_spiel2}}</td>
+                    <td id="spieler2_spiel" class="spielwerte">{{spieler2_spiel}}</td>
+                    <td id="spieler2_punkte" class="spielwertePunkte">{{spieler2_punkte}}</td>
+                   
+                    <td id="serve2" onclick="toggleServe('spieler2')"class="serveCell">  
+                        {{#if (eq serve2 1)}}<img src="/Images/tennisball.webp" class="serveImage">{{/if}}
+                    </td>
+                </tr>
+                <td class="spielerverein">{{spieler1_verein}}</td>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>{{spieler1}}</th>
+                    <th>{{spieler2}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><button class="ButtonCountersPoints" onclick="updateScore('spieler1', 'punkte')">Points</button></td>
+                    <td><button class="ButtonCountersPoints" onclick="updateScore('spieler2', 'punkte')">Points</button></td>
+                </tr>
+                <tr>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'spiel')">Game 1</button></td>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'spiel')">Game 1 </button></td>
+                </tr>
+                <tr>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'spiel2')">Game 2</button></td>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'spiel2')">Game 2</button></td>
+                </tr>
+                <tr>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'spiel3')">Game 3</button></td>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'spiel3')">Game 3</button></td>
+                </tr>
+                <tr>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'satz')">Set</button></td>
+                    <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'satz')">Set</button></td>
+                </tr>
+                <tr>
+                    <td><button class="ButtonReset" onclick="undoScore('spieler1')">Reset Player 1</button></td>
+                    <td><button class="ButtonReset" onclick="undoScore('spieler2')">Reset Player 2</button></td>
+                </tr>
+               
+
+<div class="center-container"><button type="button" onclick="openViewUrl()" class="Backbtn">Zurück</button></div>
+
+            </tbody>
+        </table>
+        
+    </div>
+</div>
+    </script>
+    
+
+    <!-- Container to display the match -->
+    <div id="matches-container"></div>
+
+    <script>
+        Handlebars.registerHelper('eq', function (a, b) {
+            return a === b;
+        });
+
+        // Open Link to Main Page
+        function openViewUrl() {
+            window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
+        }
+
+        // Fetch ID of URL
+        const currentUrl = window.location.href;
+        let Idextracted;
+
+        const idIndex = currentUrl.indexOf('id=');
+
+        if (idIndex !== -1) {
+            const idSubstring = currentUrl.substring(idIndex + 3);
+            const nextAmpersandIndex = idSubstring.indexOf('&');
+            Idextracted = nextAmpersandIndex !== -1 ? idSubstring.substring(0, nextAmpersandIndex) : idSubstring;
+            console.log("Extracted ID:", Idextracted);
+
+            fetchData(Idextracted);
+        } else {
+            console.log("ID parameter not found in the URL");
+        }
+
+        // JavaScript to fetch and display match
+        function fetchData(id) {
+            fetch(`http://localhost:3000/matches/`)
+                .then(response => response.json())
+                .then(data => {
+                    const match = data.find(item => item.id == Idextracted);
+
+                    if (match) {
+                        const source = document.getElementById('matches-template').innerHTML;
+                        const template = Handlebars.compile(source);
+                        const html = template(match);
+                        document.getElementById('matches-container').innerHTML = html;
+                        console.log(match);
+                    } else {
+                        console.error('Match with id not found.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        //Update Score logic
+        function updateScore(player, type) {
+            const scoreElement = document.getElementById(`${player}_${type}`);
+            let currentScore = scoreElement.innerText;
+            ChangeSpielstatusText();
+
+            if (type === 'punkte') {
+                // Update points logic
+                if (currentScore === '0') {
+                    scoreElement.innerText = '15';
+                } else if (currentScore === '15') {
+                    scoreElement.innerText = '30';
+                } else if (currentScore === '30') {
+                    scoreElement.innerText = '40';
+                } else if (currentScore === '40') {
+                    const opponent = (player === 'spieler1') ? 'spieler2' : 'spieler1';
+                    const opponentScore = document.getElementById(`${opponent}_punkte`).innerText;
+
+                    if (opponentScore === '40') {
+                        scoreElement.innerText = 'Adv';
+                    } else if (opponentScore === 'Adv') {
+                        // Scenario: 40:Adv -> 0:0
+                        document.getElementById(`${opponent}_punkte`).innerText = '40'; // Reset opponent to 40
+                        scoreElement.innerText = '40'; // Reset current player to 0
+                    } else {
+                        // Win the game scenario
+                        scoreElement.innerText = '0';
+                        const gameElement = document.getElementById(`${player}_spiel`);
+                        document.getElementById(`spieler1_punkte`).innerText = '0';
+                        document.getElementById(`spieler2_punkte`).innerText = '0';
+                    }
+                } else if (currentScore === 'Adv') {
+                    console.log("here")
+                    document.getElementById(`spieler1_punkte`).innerText = '0';
+                    document.getElementById(`spieler2_punkte`).innerText = '0';
+                    const gameElement = document.getElementById(`${player}_spiel`);
+                }
+            } else if (type === 'spiel') {
+                // Update games logic
+                let currentScore = parseInt(scoreElement.innerText);
+                if (currentScore < 7) {
+                    scoreElement.innerText = parseInt(currentScore) + 1;
+                    toggleServe(player);
+                   
+                }
+            } else if (type === 'spiel2') {
+                // Update games logic
+                let currentScore = parseInt(scoreElement.innerText);
+                if (currentScore < 7) {
+                    scoreElement.innerText = parseInt(currentScore) + 1;
+                    toggleServe(player);
+                }
+            } else if (type === 'spiel3') {
+                // Update games logic
+                let currentScore = parseInt(scoreElement.innerText);
+                if (currentScore < 7) {
+                    scoreElement.innerText = parseInt(currentScore) + 1;
+                    toggleServe(player);
+                }
+            } else if (type === 'satz') {
+                // Update games logic
+                let currentScore = parseInt(scoreElement.innerText);
+                if (currentScore < 3) {
+                    scoreElement.innerText = parseInt(currentScore) + 1;
+                }
+            }
+
+            // Update the database after score change
+            updateDatabase();
+        }
+
+function ChangeSpielstatusText() {
+            var selectedValue = document.getElementById('statusDropdown').value;
+            document.getElementById('statusText').innerText = "Im Gange";
+  }
+
+
+        // Function to undo scores
+        function undoScore(player) {
+            const types = ['satz', 'spiel3', 'spiel2', 'spiel', 'punkte'];
+            types.forEach(type => {
+                const scoreElement = document.getElementById(`${player}_${type}`);
+                scoreElement.innerText = '0';
+            });
+
+            // Update the database after undo
+            updateDatabase();
+        }
+
+        // Function to show the dropdown and hide the edit button
+        function enableStatusEdit() {
+            document.getElementById('statusText').style.display = 'none';
+            document.getElementById('statusDropdown').style.display = 'inline-block';
+            document.getElementById('editButton').style.display = 'none'; // Hide Edit button
+            document.getElementById('saveButton').style.display = 'inline-block'; // Show Save button
+        }
+
+        // Function to save the edited status and revert to edit mode
+        function saveStatusEdit() {
+            var selectedValue = document.getElementById('statusDropdown').value;
+            document.getElementById('statusText').innerText = selectedValue;
+            document.getElementById('statusText').style.display = 'inline-block';
+            document.getElementById('statusDropdown').style.display = 'none';
+            document.getElementById('editButton').style.display = 'inline-block'; // Show Edit button
+            document.getElementById('saveButton').style.display = 'none'; // Hide Save button
+
+            // Update the database after status change
+            updateDatabase();
+        }
+
+        // Function to edit player name
+        function editName(player) {
+            const nameSpan = document.getElementById(player);
+            const currentName = nameSpan.innerText;
+
+            // Create an input field
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = currentName;
+            input.maxLength = 9; // Set maximum length to 9 characters
+
+            // Replace the name with the input field
+            nameSpan.innerText = '';
+            nameSpan.appendChild(input);
+            input.focus();
+
+            // Handle blur event to save the new name
+            input.addEventListener('blur', () => {
+                const newName = input.value;
+                nameSpan.removeChild(input);
+                nameSpan.innerText = newName;
+
+                // Update the database after name change
+                updateDatabase();
+            });
+
+            // Handle Enter key press to save the new name
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    input.blur();
+                }
+            });
+        }
+
+// Function to toggle serve
+function toggleServe(player) {
+    const serve1Element = document.getElementById('serve1');
+    const serve2Element = document.getElementById('serve2');
+
+    if (player === 'spieler1') {
+        if (serve1Element.innerHTML.trim()) {
+            serve1Element.innerHTML = '';
+            serve2Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+        } else {
+            serve1Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+            serve2Element.innerHTML = '';
+        }
+    } else if (player === 'spieler2') {
+        if (serve2Element.innerHTML.trim()) {
+            serve2Element.innerHTML = '';
+            serve1Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+        } else {
+            serve2Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+            serve1Element.innerHTML = '';
+        }
+    }
+
+    // Update the database after serve change
+    updateDatabase();
+}
+
+
+        // Function to update the database
+        async function updateDatabase() {
+            const spieler1 = document.getElementById('spieler1').innerText;
+            const spieler2 = document.getElementById('spieler2').innerText;
+            const spieler1_Satz = document.getElementById('spieler1_satz').innerText;
+            const spieler2_Satz = document.getElementById('spieler2_satz').innerText;
+            const spieler1_Spiel = document.getElementById('spieler1_spiel').innerText;
+            const spieler1_Spiel2 = document.getElementById('spieler1_spiel2').innerText;
+            const spieler1_Spiel3 = document.getElementById('spieler1_spiel3').innerText;
+            const spieler2_Spiel = document.getElementById('spieler2_spiel').innerText;
+            const spieler2_Spiel2 = document.getElementById('spieler2_spiel2').innerText;
+            const spieler2_Spiel3 = document.getElementById('spieler2_spiel3').innerText;
+            const spieler1_Punkte = document.getElementById('spieler1_punkte').innerText;
+            const spieler2_Punkte = document.getElementById('spieler2_punkte').innerText;
+            const spielstatus = document.getElementById('statusText').innerText;
+            const serve1 = document.getElementById('serve1').innerHTML.trim() ? 1 : 0;
+            const serve2 = document.getElementById('serve2').innerHTML.trim() ? 1 : 0;
+            
+
+            fetch(`http://localhost:3000/update/${Idextracted}`, {
+                method: 'PATCH',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    spieler1: spieler1,
+                    spieler2: spieler2,
+                    spieler1_Satz: spieler1_Satz,
+                    spieler2_Satz: spieler2_Satz,
+                    spieler1_Spiel: spieler1_Spiel,
+                    spieler1_Spiel2: spieler1_Spiel2,
+                    spieler1_Spiel3: spieler1_Spiel3,
+                    spieler2_Spiel: spieler2_Spiel,
+                    spieler2_Spiel2: spieler2_Spiel2,
+                    spieler2_Spiel3: spieler2_Spiel3,
+                    spieler1_Punkte: spieler1_Punkte,
+                    spieler2_Punkte: spieler2_Punkte,
+                    spielstatus: spielstatus,
+                    serve1: serve1,
+                    serve2: serve2
+                    
+                })
+            }).then(response => response.json()).then(() => {
+                console.log('Database updated successfully');
+            }).catch(error => {
+                console.error('Error updating database:', error);
+            });
+        }
+        
+    </script>
+</body>
+</html>

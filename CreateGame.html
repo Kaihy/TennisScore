@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neues Spiel anlegen</title>
+    <link rel="stylesheet" href="css/CreateGameStyles.css">
+</head>
+<body>
+    <form id="sheetdb-form">
+        <div class="container">
+            <h1>Neues Spiel anlegen</h1>
+            <p>Bitte fülle die Felder aus.</p>
+            <hr>
+            <label for="spieler1"><b>Spieler1</b></label>
+            <input type="text" placeholder="Enter Spielername 1" name="spieler1" required>
+    
+            <label for="spieler2"><b>Spieler2</b></label>
+            <input type="text" placeholder="Enter Spielername 2" name="spieler2" required>
+    
+            <label for="spieler1_verein"><b>Spieler 1 Verein</b></label>
+            <input type="text" placeholder="Enter Verein Spieler 1" name="spieler1_verein" required>
+    
+            <label for="spieler2_verein"><b>Spieler 2 Verein</b></label>
+            <input type="text" placeholder="Enter Verein Spieler 2" name="spieler2_verein" required>
+    
+            <label for="courtnumber"><b>Courtnummer</b></label>
+            <input type="number" placeholder="Platznummer" name="courtnumber" required>
+    
+            <label for="spielklasse"><b>Spielklasse</b></label>
+            <select name="spielklasse" required>
+                <option value="" disabled selected> Spielklasse auswählen</option>
+                <option value="HL"> HL</option>
+                <option value="KL II"> KL II</option>
+                <option value="KL III"> KL III</option>
+                <option value="KL IV"> KL IV</option>
+                <option value="KL V"> KL V</option>
+                <option value="KL VI"> KL VI</option>
+                <option value="KL VII"> KL VII</option>
+            </select>
+    
+            <label for="altersklasse"><b>Altersklasse</b></label>
+            <select name="altersklasse" required>
+                <option value="" disabled selected> Altersklasse</option>
+                <option value="Damen"> Damen</option>
+                <option value="Damen 30"> Damen 30</option>
+                <option value="Damen 50"> Damen 50</option>
+                <option value="Damen 60"> Damen 60</option>
+                <option value="Herren"> Herren</option>
+                <option value="Herren 30"> Herren 30</option>
+                <option value="Herren 40"> Herren 40</option>
+                <option value="Herren 55"> Herren 55</option>
+                <option value="Herren 60"> Herren 60</option>
+                <option value="Herren 65"> Herren 65</option>
+                <option value="Herren 70"> Herren 70</option>
+            </select>
+    
+            <div class="clearfix">
+                <button type="button" onclick="openViewUrl()" class="cancelbtn">Cancel</button>
+                <button type="submit" class="signupbtn">Save</button>
+            </div>
+        </div>
+    </form>
+    
+    <script>
+        function openViewUrl() {
+            window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
+        }
+    
+        document.getElementById('sheetdb-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            var form = document.getElementById('sheetdb-form');
+            var formData = new FormData(form);
+            
+            // Convert form data to JSON object
+            var data = {};
+            formData.forEach((value, key) => { data[key] = value });
+            
+            fetch('http://localhost:3000/add', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            }).then(response => response.json()).then((response) => {
+                console.log(response);
+                window.location.href = 'GameOverview.html';
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

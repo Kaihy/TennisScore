@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spielübersicht aller Spiele</title>
+    <link rel="stylesheet" href="css/GameOverviewStyles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <script defer src="/handlebars/handlebars.js"></script>
+</head>
+
+
+    <body>
+    <script>
+        function openOverviewURL() {
+            window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
+        }
+
+        function DeleteOverviewURL(id) {   
+            window.location.href = `http://127.0.0.1:5500/DeleteOverview.html`;
+        }
+
+        function openViewUrl() {
+            window.location.href = 'http://127.0.0.1:5500/CreateGame.html';
+        };
+    </script>
+
+<button type="button" onclick="openOverviewURL()" class="signupbtn">Spielübersicht</button>
+<button type="button" onclick="DeleteOverviewURL()" class="signupbtn">Delete Übersicht</button>
+<button type="button" onclick="openViewUrl()" class="editGame">Neues Spiel anlegen</button>
+
+
+
+    </body>
+    </html>

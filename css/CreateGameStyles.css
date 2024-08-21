@@ -1,0 +1,129 @@
+body{
+    font-family: Verdana, sans-serif;
+    font-weight: 100;
+    color: #515050;
+}
+img{
+    display: block;
+    border-radius: 0px 0px 25px 25px; 
+    /* Example height */
+    width: 100%;
+    top:-300;
+    height: auto; 
+}
+h1{
+color: rgb(255, 255, 255);
+  text-align: center;
+  position: relative;
+  top:-200px;
+}
+.CourtTable {
+        width: 100%; /* Ensure table takes full width */
+         
+}
+.CourtBox {
+    background-color: #CAD4DB;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 25px; 
+    padding: 10px 20px 10px 10px;
+    margin-top: 10%;   
+}
+
+
+.Courtnumber{
+    font-weight: 800;
+    font-size: 20px;
+    padding: 30px 80px 20px 0px;
+}
+
+.DisplayHeadlines {
+    display: flex; /* Use flexbox to align items horizontally */
+    gap: 32px; /* Remove any gaps between items */
+}
+.DisplayGameTitles{
+    font-weight: 200;
+    font-size: 12px;
+
+}
+
+
+.DisplayGameNumbers{
+    font-weight: 100;
+    font-size: 8px;
+    text-align: center;
+}
+.spielerverein{
+    font-size: 10px;
+    padding: 0px 8px 0px 8px;
+
+}   
+
+.spielerfeld{
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0,0 0.24) 0px 3px 8px;
+    border-radius: 12px; 
+    padding: 0px 80px 0px 0px;
+    font-size: 15px;
+}
+
+.spielwerte{
+    background-color: #ffffff;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 12px; 
+    padding: 10px;
+    font-size: 15px;
+    text-align: center;
+}
+.spielwertePunkte{
+    background-color: #515050;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 12px; 
+    padding: 10px;
+    font-size: 15px;
+    color: #ffffff;
+    text-align: center;
+}
+
+.CourtDescription > span{
+    padding: 20px 20px 10px 0px;
+    display: inline-block; /* Display divs inline */
+    text-align: center; /* Optionally center-align text */ 
+    font-size: 9px;
+    font-weight: 200;
+}
+.CourtDescription2 > span{
+    padding: 0px 20px 0px 0px;
+    display: inline-block; /* Display divs inline */
+    text-align: center; /* Optionally center-align text */ 
+    font-size: 9px;
+    font-weight: 200;
+}
+.signupbtn{
+    margin-top: 10px;
+    background-color: #ffffff62;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 12px;
+    height: 30px;
+    width: 100%;
+    border: 0px solid blue;
+    padding: 0px 0px 0px 0px;
+    font-size: 10px;
+    font-weight: 800;
+}
+.editGame{
+    margin-top: 30px;
+    background-color: #8100d662;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    border-radius: 12px;
+    height: 70px;
+    width: 50%;
+    border: 0px solid blue;
+    font-size: 15px;
+    font-weight: 500;
+    color: #ffffff;
+    margin-left: 25%;
+    }
+
+
+
+

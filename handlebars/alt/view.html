@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spielübersicht aller Spiele</title>
+    <link rel="stylesheet" href="css/ViewStyles.css">
+</head>
+<body>
+    <h1>Spielübersicht aller Spiele</h1>
+    <div id="data-container"></div>
+
+    <div class="clearfix">
+        <button type="button" onclick="openViewUrl()" class="cancelbtn">Neues Spiel anlegen</button>
+        <button type="button" onclick="openEditUrl()" class="signupbtn">Spielpunkte editieren</button>
+    </div>
+
+    <script>
+        function openViewUrl() {
+            window.location.href = 'http://127.0.0.1:5500/index.html';
+        }
+        
+        function openEditUrl() {
+            window.location.href = 'http://127.0.0.1:5500/edit.html';
+        }
+
+        async function fetchData() {
+            const apiUrl = 'http://localhost:3000/matches'; // Updated to match your Node.js server endpoint
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                displayData(data);
+                console.log(data); // Log the fetched data for debugging
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function displayData(data) {
+            const container = document.getElementById('data-container');
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('row-container'); // Add a class for styling
+                const table = document.createElement('table');
+                table.classList.add('data-table');
+                const tbody = document.createElement('tbody');
+
+                // Court Number
+                const courtNumberHeader = document.createElement('h2');
+                courtNumberHeader.textContent = 'Court Number: ' + item.courtnumber;
+                div.appendChild(courtNumberHeader);
+                container.appendChild(div);
+
+               //Spielklasse
+               const spielklasseHeader = document.createElement('h5');
+               spielklasseHeader.textContent = 'Spielklasse: ' + item.spielklasse;
+                div.appendChild(spielklasseHeader);
+                container.appendChild(div);
+
+                //Spielstatus
+               const spielstatusHeader = document.createElement('h5');
+               spielstatusHeader.textContent = 'Spielstatus: ' + item.spielstatus;
+                div.appendChild(spielstatusHeader);
+                container.appendChild(div);
+
+                // Title row
+                const titleRow = document.createElement('tr');
+                const playerTitle = document.createElement('th');
+                playerTitle.textContent = 'Player';
+                titleRow.appendChild(playerTitle);
+                const satzTitle = document.createElement('th');
+                satzTitle.textContent = 'Set';
+                titleRow.appendChild(satzTitle);
+                const gamesTitle = document.createElement('th');
+                gamesTitle.textContent = 'Games';
+                titleRow.appendChild(gamesTitle);
+                const pointsTitle = document.createElement('th');
+                pointsTitle.textContent = 'Points';
+                titleRow.appendChild(pointsTitle);
+                tbody.appendChild(titleRow);
+
+                // Row for Spieler 1
+                const player1Row = document.createElement('tr');
+                const player1Header = document.createElement('th');
+                player1Header.textContent = item.spieler1;
+                player1Row.appendChild(player1Header);
+                const spieler1SetCell = document.createElement('td');
+                spieler1SetCell.textContent = item.spieler1_satz;
+                player1Row.appendChild(spieler1SetCell);
+                const spieler1GamesCell = document.createElement('td');
+                spieler1GamesCell.textContent = item.spieler1_spiel;
+                player1Row.appendChild(spieler1GamesCell);
+                const spieler1PointCell = document.createElement('td');
+                spieler1PointCell.textContent = item.spieler1_punkte;
+                player1Row.appendChild(spieler1PointCell);
+                tbody.appendChild(player1Row);
+
+                // Row for Spieler 2
+                const player2Row = document.createElement('tr');
+                const player2Header = document.createElement('th');
+                player2Header.textContent = item.spieler2;
+                player2Row.appendChild(player2Header);
+                const spieler2SetCell = document.createElement('td');
+                spieler2SetCell.textContent = item.spieler2_satz;
+                player2Row.appendChild(spieler2SetCell);
+                const spieler2GamesCell = document.createElement('td');
+                spieler2GamesCell.textContent = item.spieler2_spiel;
+                player2Row.appendChild(spieler2GamesCell);
+                const spieler2PointCell = document.createElement('td');
+                spieler2PointCell.textContent = item.spieler2_punkte;
+                player2Row.appendChild(spieler2PointCell);
+
+                // Add Functionality
+                const player2EditCell = document.createElement('td');
+                const player2EditButton = document.createElement('button');
+                player2EditButton.textContent = 'Punkte bearbeiten';
+                player2EditButton.onclick = () => {
+                    window.location.href = `http://127.0.0.1:5500/edit.html?id=${item.id}`;
+                    console.log(item.id);
+                };
+                player2EditCell.appendChild(player2EditButton);
+                player2Row.appendChild(player2EditCell);
+                tbody.appendChild(player2Row);
+
+                table.appendChild(tbody);
+                div.appendChild(table);
+                container.appendChild(div);
+            });
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>

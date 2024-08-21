@@ -1,0 +1,36 @@
+
+Framework: 
+postgres SQL 
+Management System pgAdmin 4
+_____________
+Database: 
+user: postgres
+PW: 12345
+Host: localhost
+DB: Tennis_App
+Table:tennis_match
+
+__________________________
+
+
+Google Tabelle: 
+https://docs.google.com/spreadsheets/d/1LZOcGrE4ZZ-_y0tfUu9CcUNoPAP1tGD_LRIchxw0jVQ/edit#gid=0
+
+_______________________________
+
+Function: 
+
+_______________
+
+Next Step: 
+- Tiebreak_Mode DB Abruf
+
+
+
+
+- Edit Seite
+	- Delete Function 
+	- Maximal 6:7 Punkte 
+	
+
+

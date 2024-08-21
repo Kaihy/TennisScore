@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelöschte Spiele Übersicht </title>
+    <link rel="stylesheet" href="css/GameOverviewStyles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <script defer src="/handlebars/handlebars.js"></script>
+    <script>
+        let allMatches = [];
+
+        async function fetchAndUpdateMatches() {
+            try {
+                const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+                const data = await response.json();
+                allMatches = data; // Store all matches globally
+                updateMatches();
+            } catch (error) {
+                console.error('Error fetching match data:', error);
+            }
+        }
+
+        function updateMatches() {
+    const filters = getFilters();
+    const filteredData = allMatches.filter(match => {
+        // Filter matches where "deleteflag" is either 1 or 0
+        if (match.deleteflag !== 1) {
+            return false;
+        }
+        
+        // Apply other filters
+        return (!filters.courtnumber || match.courtnumber.toString() === filters.courtnumber) &&
+               (!filters.spielklasse || match.spielklasse === filters.spielklasse) &&
+               (!filters.altersklasse || match.altersklasse === filters.altersklasse) &&
+               (!filters.status || match.spielstatus === filters.status);
+    });
+
+    // Sort by ID if no filters are applied
+    if (!filters.courtnumber && !filters.spielklasse && !filters.altersklasse && !filters.status) {
+        filteredData.sort((a, b) => a.id - b.id);
+    }
+
+    const matchesContainer = document.getElementById('matches-container');
+    const source = document.getElementById('matches-template').innerHTML;
+    const template = Handlebars.compile(source);
+    const html = template({ matches: filteredData });
+    matchesContainer.innerHTML = html;
+}
+
+        function getFilters() {
+            return {
+                courtnumber: document.getElementById('filter-courtnumber').value,
+                spielklasse: document.getElementById('filter-spielklasse').value,
+                altersklasse: document.getElementById('filter-altersklasse').value,
+                status: document.getElementById('filter-status').value
+            };
+        }
+
+        function applyFilters() {
+            console.log('Filters applied:', getFilters());
+            updateMatches();
+        }
+
+        function populateFilters(data) {
+            const courtnumbers = [...new Set(data.map(match => match.courtnumber.toString()))];
+            const spielklasses = [...new Set(data.map(match => match.spielklasse))];
+            const altersklasses = [...new Set(data.map(match => match.altersklasse))];
+            const statuses = [...new Set(data.map(match => match.spielstatus))];
+
+            populateDropdown('filter-courtnumber', courtnumbers);
+            populateDropdown('filter-spielklasse', spielklasses);
+            populateDropdown('filter-altersklasse', altersklasses);
+            populateDropdown('filter-status', statuses);
+        }
+
+        function populateDropdown(elementId, values) {
+            const dropdown = document.getElementById(elementId);
+            dropdown.innerHTML = '<option value="">All</option>';
+            values.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                dropdown.appendChild(option);
+            });
+        }
+
+        window.onload = function() {
+            fetchAndUpdateMatches();
+            fetchInitialFilters();
+        };
+
+        async function fetchInitialFilters() {
+            try {
+                const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+                const data = await response.json();
+                populateFilters(data);
+            } catch (error) {
+                console.error('Error fetching initial filter data:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <img src="/Images/tennis_Court.jpg" alt="Description of the image">
+    <h1>Gelöschte Spiele</h1>
+    <div class="clearfix">
+        <button type="button" onclick="IndexHtmlUrl()" class="MainPage">Zurück zur Main Page</button>
+    </div>
+    
+    <div class="filter-container">
+        <label for="filter-courtnumber">Courtnumber:</label>
+        <select id="filter-courtnumber" onchange="applyFilters()"></select>
+        
+        <label for="filter-spielklasse">Spielklasse:</label>
+        <select id="filter-spielklasse" onchange="applyFilters()"></select>
+        
+        <label for="filter-altersklasse">Altersklasse:</label>
+        <select id="filter-altersklasse" onchange="applyFilters()"></select>
+        
+        <label for="filter-status">Status:</label>
+        <select id="filter-status" onchange="applyFilters()"></select>
+    </div>
+    
+    <div id="matches-container"></div>
+
+    <script id="matches-template" type="text/x-handlebars-template">
+        {{#each matches}}
+        <div class="CourtBox">    
+            <div class="CourtData">
+                <span class="Courtnumber">Courtnumber: {{courtnumber}}</span>
+                <table class="CourtTable">
+                    <thead>
+                        <tr class="DisplayGameTitles">
+                            <th colspan="1">Spielername</th>
+                            <th colspan="1">Set</th>
+                            <th colspan="3">Games</th>
+                            <th colspan="1">Points</th>
+                        </tr>
+                        <tr class="DisplayGameNumbers">
+                            <th></th>
+                            <th></th>
+                            <th>3</th>
+                            <th>2</th>
+                            <th>1</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="spielerfeld">{{spieler1}} </td>
+                            <td class="spielwerte">{{spieler1_satz}}</td>
+                            <td class="spielwerte">{{spieler1_spiel3}}</td>
+                            <td class="spielwerte">{{spieler1_spiel2}}</td>
+                            <td class="spielwerte">{{spieler1_spiel}}</td>
+                            <td class="spielwertePunkte">{{spieler1_punkte}}</td>
+                            <td class="serveImage"> {{#if (eq serve1 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                        </tr>
+                        <tr>
+                            <td class="spielerverein">{{spieler1_verein}}</td>
+                        </tr>
+                        <tr>
+                            <td class="spielerfeld">{{spieler2}} </td>
+                            <td class="spielwerte">{{spieler2_satz}}</td>
+                            <td class="spielwerte">{{spieler2_spiel3}}</td>
+                            <td class="spielwerte">{{spieler2_spiel2}}</td>
+                            <td class="spielwerte">{{spieler2_spiel}}</td>
+                            <td class="spielwertePunkte">{{spieler2_punkte}} </td>
+                            <td class="serveImage"> {{#if (eq serve2 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                        </tr>
+                        <tr>
+                            <td class="spielerverein">{{spieler2_verein}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="CourtDescription">
+                    <span>Spielklasse: {{spielklasse}}</span>
+                    <span>Altersklasse: {{altersklasse}}</span>
+                </div>
+                <div class="CourtDescription2"> 
+                    <span>Status: {{spielstatus}}</span>
+                    <span>ID: {{id}}</span>
+                </div>
+                <button type="button" onclick="undoDelete('{{id}}')" class="undoDeleteBtn">Undo Delete</button>
+            </div>
+        </div>
+        {{/each}}
+    </script>
+
+    <script>
+           function IndexHtmlUrl() {
+            window.location.href = 'http://127.0.0.1:5500/index.html';
+        }
+
+
+
+
+
+
+ // Function to undo the delete flag
+ async function undoDelete(id) {
+    const deleteflag = "0"; // This is the value you're sending to update
+
+    console.log("Undo Delete button clicked for ID:", id); // Log the ID
+
+    try {
+        const response = await fetch(`http://localhost:3000/delete/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ deleteflag: deleteflag })
+        });
+
+        if (response.ok) {
+            console.log('Database updated successfully');
+            // Optionally, you might want to refresh the match data here
+            fetchAndUpdateMatches();
+        } else {
+            console.error('Failed to update database:', response.statusText);
+        }
+    } catch (error) {
+        console.error('Error updating database:', error);
+    }
+}
+      // Registering the 'eq' helper in Handlebars
+      Handlebars.registerHelper('eq', function(a, b) {
+            return a === b;
+        });
+      
+    </script>
+</body>
+</html>

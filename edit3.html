@@ -139,7 +139,7 @@
     <div id="matches-container"></div>
 
     <script>
-        let tiebreak = false;
+        let tiebreak_mode = 1; // Default value, will be overwritten by fetched data
 
         Handlebars.registerHelper('eq', function (a, b) {
             return a === b;
@@ -175,10 +175,24 @@
                     const match = data.find(item => item.id == Idextracted);
 
                     if (match) {
+                        // Update the tiebreak_mode from fetched data
+                        tiebreak_mode = match.tiebreak_mode;
+
+                        // Compile and display the match data using Handlebars
                         const source = document.getElementById('matches-template').innerHTML;
                         const template = Handlebars.compile(source);
                         const html = template(match);
                         document.getElementById('matches-container').innerHTML = html;
+
+                        // Set the checkbox and tiebreak header based on the fetched tiebreak_mode
+                        if (tiebreak_mode === 1) {
+                            document.getElementById('tiebreak-toggle').checked = true;
+                            document.getElementById('tiebreak-header').innerText = 'Tiebreak';
+                        } else {
+                            document.getElementById('tiebreak-toggle').checked = false;
+                            document.getElementById('tiebreak-header').innerText = '';
+                        }
+
                         console.log(match);
                     } else {
                         console.error('Match with id not found.');
@@ -206,39 +220,25 @@ async function undoDelete(id) {
         return;
     }   
         }; 
-//////////
+////////// TiebreakModus///////////
 
-
-let tiebreak_mode = 1;
 function toggleTiebreak() {
-    // Schleife einbauen (in diesem Fall eine einfache while-Schleife als Beispiel)
-    let attempts = 0;
-    const maxAttempts = 1; // In diesem Fall nur eine Iteration, könnte bei Bedarf erhöht werden
-
-    while (attempts < maxAttempts) {
-        // Wechseln Sie den Wert von tiebreak_mode zwischen 0 und 1
-        if (tiebreak_mode === 0) {
-            tiebreak_mode = 1;
-            document.getElementById(`spieler1_punkte`).innerText = '0';
-            document.getElementById(`spieler2_punkte`).innerText = '0';
-        } else {
-            tiebreak_mode = 0;
-            document.getElementById(`spieler1_punkte`).innerText = '0';
-            document.getElementById(`spieler2_punkte`).innerText = '0';
+            if (tiebreak_mode === 0) {
+                tiebreak_mode = 1;
+                document.getElementById('spieler1_punkte').innerText = '0';
+                document.getElementById('spieler2_punkte').innerText = '0';
+                document.getElementById('tiebreak-header').innerText = 'Tiebreak';
+            } else {
+                tiebreak_mode = 0;
+                document.getElementById('spieler1_punkte').innerText = '0';
+                document.getElementById('spieler2_punkte').innerText = '0';
+                document.getElementById('tiebreak-header').innerText = '';
+            }
+            // Update the database with the new tiebreak_mode
+            updateDatabase();
         }
 
-        // Setzen Sie die Checkbox auf den aktuellen Wert von tiebreak_mode
-        document.getElementById('tiebreak-toggle').checked = tiebreak_mode === 1;
-
-        // Aktualisieren Sie die Datenbank, um den neuen Wert von tiebreak_mode zu speichern
-        updateDatabase();
-
-        // Schleifenvariable inkrementieren
-        attempts++;
-    }
-}
-
-/////////////
+////////// TiebreakModus-ENDE///////////
 
     // Update Score logic
     function updateScore(player, type) {
@@ -248,7 +248,6 @@ function toggleTiebreak() {
 
         if (type === 'punkte') {
             if (tiebreak_mode === 1) {
-            
                     // Tiebreak mode: simple increment
                     scoreElement.innerText = parseInt(currentScore) + 1;
                 } else {

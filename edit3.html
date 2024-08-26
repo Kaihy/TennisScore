@@ -6,7 +6,8 @@
     <link rel="stylesheet" href="css/EditStyles.css">
     <!-- Include Handlebars.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
 </head>
 <body>
     <!-- Handlebars template -->
@@ -23,7 +24,7 @@
                     <option value="Im Gange">Im Gange</option>
                     <option value="Unterbrochen">Unterbrochen</option>
                     <option value="Beendet">Beendet</option>
-                    <option value="geplant">Beendet</option>
+                    <option value="geplant">geplant</option>
                 </select>
                 <button class="editButton" id="editButton" onclick="enableStatusEdit()">Edit Spielstatus</button>
                 <button class="saveButton" id="saveButton" onclick="saveStatusEdit()" style="display: none;">Save</button>
@@ -71,6 +72,7 @@
                         </td>
                     </tr>
                     <td class="spielerverein">{{spieler2_verein}}</td>
+                    
                 </tbody>
             </table>
 
@@ -91,42 +93,39 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><button class="ButtonCountersPoints" onclick="updateScore('spieler1', 'punkte')">Points</button></td>
-                        <td><button class="ButtonCountersPoints" onclick="updateScore('spieler2', 'punkte')">Points</button></td>
+                        <td><button class="ButtonCountersPoints"  id="ButtonCountersPoints" onclick="updateScore('spieler1', 'punkte')">Points</button></td>
+                        <td><button class="ButtonCountersPoints" id="ButtonCountersPoints" onclick="updateScore('spieler2', 'punkte')">Points</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'spiel')">Game 1</button></td>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'spiel')">Game 1 </button></td>
+                        <td><button class="ButtonCounters"  id="ButtonCounters" onclick="updateScore('spieler1', 'spiel')">Game 1</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler2', 'spiel')">Game 1 </button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'spiel2')">Game 2</button></td>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'spiel2')">Game 2</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler1', 'spiel2')">Game 2</button></td>
+                        <td><button class="ButtonCounters"  id="ButtonCounters" onclick="updateScore('spieler2', 'spiel2')">Game 2</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'spiel3')">Game 3</button></td>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'spiel3')">Game 3</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler1', 'spiel3')">Game 3</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler2', 'spiel3')">Game 3</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler1', 'satz')">Set</button></td>
-                        <td><button class="ButtonCounters" onclick="updateScore('spieler2', 'satz')">Set</button></td>
+                        <td><button class="ButtonCounters"  id="ButtonCounters" onclick="updateScore('spieler1', 'satz')">Set</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler2', 'satz')">Set</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonReset" onclick="undoScore('spieler1')">Reset Player 1</button></td>
-                        <td><button class="ButtonReset" onclick="undoScore('spieler2')">Reset Player 2</button></td>
+                        <td><button class="ButtonReset" id="ButtonReset" onclick="undoScore('spieler1')">Reset Player 1</button></td>
+                        <td><button class="ButtonReset" id="ButtonReset" onclick="undoScore('spieler2')">Reset Player 2</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonWin" onclick="updateWin('spieler1')" img src="/Images/trophy.png">Player 1 Win</button></td>
-                        <td><button class="ButtonWin" onclick="updateWin('spieler2')" img src="/Images/trophy.png">Player 2 Win</button></td>
+                        <td><button class="ButtonWin" id="ButtonWin"  onclick="updateWin('spieler1')">Player 1 Win</button></td>
+                        <td><button class="ButtonWin" id="ButtonWin" onclick="updateWin('spieler2')">Player 2 Win</button></td>
                     </tr>
                     <tr>
-                        <td><button type="button" onclick="undoDelete('{{id}}')" class="ButtonReset">Spiel löschen</button></td>
+                        <td><button  id="ButtonDelete" onclick="undoDelete('{{id}}')" class="ButtonDelete">Spiel löschen</button></td>
 
                     </tr>
-                     <!-- Placeholder for Win Icon -->
-        <tr>
-            <td id="spieler1_win_icon"  ></td>
-            <td id="spieler2_win_icon"></td>
-        </tr>
+                   
+      
 
                     <div class="center-container"><button type="button" onclick="openViewUrl()" class="Backbtn">Zurück zur Übersicht</button></div>
                 </tbody>
@@ -135,6 +134,18 @@
     </div>
     </script>
     
+<!-- Winner Modal -->
+<div id="winnerModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <div id="winnerName"></div>
+        <div id="loadingBarContainer" style="display: none; margin-top: 20px;">
+            <div id="loadingBar" style="width: 0%; height: 20px; background-color: green;"></div>
+        </div>
+    </div>
+</div>
+
+
     <!-- Container to display the match -->
     <div id="matches-container"></div>
 
@@ -177,6 +188,7 @@
                     if (match) {
                         // Update the tiebreak_mode from fetched data
                         tiebreak_mode = match.tiebreak_mode;
+                        winnervalue = match.winnervalue;
 
                         // Compile and display the match data using Handlebars
                         const source = document.getElementById('matches-template').innerHTML;
@@ -192,6 +204,27 @@
                             document.getElementById('tiebreak-toggle').checked = false;
                             document.getElementById('tiebreak-header').innerText = '';
                         }
+                      // Assuming spieler1_punkte is the HTML element where the trophy should be displayed
+                    const spieler1_punkte = document.getElementById('spieler1_punkte');
+                    const spieler2_punkte = document.getElementById('spieler2_punkte');
+                    // Define the path to your trophy image
+                    const trophyIcon = '<img src="/Images/trophy.png" alt="Trophy" style="width: 30%; height: auto;">';
+                    // Set the winnerValue Icon
+                    if (winnervalue === 1) {
+                     // Assuming you want to add a trophy icon, you can use an emoji or an image
+                     spieler1_punkte.innerHTML = trophyIcon;
+                     disableAllButtons()
+                    } else if  (winnervalue === 2){
+                    // Clear the icon if winnervalue is not 1
+                     spieler2_punkte.innerHTML = trophyIcon;
+                     disableAllButtons()
+                    } else if (winnervalue === 0) {
+                    // Clear the icon if winnervalue is not 1
+                    document.getElementById('spieler1_punkte').innerText = '0';
+                document.getElementById('spieler2_punkte').innerText = '0';
+                     
+                     
+                }
 
                         console.log(match);
                     } else {
@@ -237,7 +270,6 @@ function toggleTiebreak() {
             // Update the database with the new tiebreak_mode
             updateDatabase();
         }
-
 ////////// TiebreakModus-ENDE///////////
 
     // Update Score logic
@@ -322,6 +354,8 @@ function toggleTiebreak() {
             types.forEach(type => {
                 const scoreElement = document.getElementById(`${player}_${type}`);
                 scoreElement.innerText = '0';
+                winnervalue = '0'; 
+
             });
             // Update the database after undo
             updateDatabase();
@@ -329,22 +363,113 @@ function toggleTiebreak() {
         return;
     }   
         }; 
+/////////////
+let winnervalue;  // Declare globally
 
-// Function Win  Player 1 or 2    
-        function updateWin(player) {
-    const winIconElement = document.getElementById(`${player}_win_icon`);
-    const winIconHtml = '<img src="/Images/trophy.png" alt="Winner" class="winIcon">'; // Change the icon path as needed
+function updateWin(player) {
+    // Get the winner's name
+    const winnerNameElement = document.getElementById(player);
+    if (winnerNameElement) {
+        const winnerName = winnerNameElement.innerText;
 
-    // Display the win icon
-    winIconElement.innerHTML = winIconHtml;
+        if (player === 'spieler1') {
+            winnervalue = '01'; // Player 1 wins
+            document.getElementById(`spieler2_punkte`).innerText = '0';
+            document.getElementById('statusText').innerText = "Beendet";
+        } else if (player === 'spieler2') {
+            winnervalue = '02'; // Player 2 wins
+            document.getElementById(`spieler1_punkte`).innerText = '0';
+            document.getElementById('statusText').innerText = "Beendet";
+        }
+    
+        // Display the winner's name and the decision buttons in the modal
+        const winnerNameModal = document.getElementById('winnerName');
+        if (winnerNameModal) {
+            winnerNameModal.innerHTML = `
+                <div style="text-align: center;">
+                    <img src="/Images/trophy.png" alt="Trophy" style="width: 500px; height: 500px; margin-top: 80px;">
+                    <div style="font-size: 50px; font-weight: bold; margin-top: 20px;">${winnerName} has won the match!</div>
+                    <div style="margin-top: 30px;">
+                        <button id="proceedButton" style="font-size: 20px; padding: 10px 20px; margin-right: 10px;">Proceed</button>
+                    </div>
+                </div>
+            `;
+        } else {
+            console.warn("Element with ID 'winnerName' not found.");
+        }
 
-    // Optionally, disable further score updates for the player
-    document.querySelectorAll(`button[onclick^="updateScore('${player}')]`).forEach(button => {
-        button.disabled = true;
-    });
+        // Show the modal
+        const modal = document.getElementById('winnerModal');
+        if (modal) {
+            modal.style.display = "block";
 
-    console.log(`${player} has won the match!`);
+            // Add event listener for the "Proceed" button
+            const proceedButton = document.getElementById('proceedButton');
+            if (proceedButton) {
+                proceedButton.onclick = function() {
+                    // Trigger the confetti animation with larger particles
+                    confetti({
+                        particleCount: 600, // Increase the number of particles
+                        spread: 200, // Increase the spread for a wider dispersion
+                        startVelocity: 80, // Optional: Adjust to control the speed of particles
+                        origin: { x: 0.9, y: 0.3 }, // Adjust origin to the right side and higher on the screen
+                        scalar: 2 // Larger confetti particles
+                    });
+
+                    console.log(`${winnerName} has won the match!`);
+                    console.log(winnervalue);
+
+                    // Update the database with the winner value
+                    updateDatabase();
+
+ // Show the loading bar
+ const loadingBarContainer = document.getElementById('loadingBarContainer');
+        const loadingBar = document.getElementById('loadingBar');
+        loadingBarContainer.style.display = 'block';
+
+        // Animate the loading bar over 4 seconds
+        let width = 0;
+        const interval = setInterval(() => {
+            width += 1;
+            loadingBar.style.width = width + '%';
+            if (width >= 100) {
+                clearInterval(interval);
+                // Redirect to the desired URL after the loading bar reaches 100%
+                window.location.href = 'http://127.0.0.1:5500/GameOverview.html'; // Change to your desired URL
+            }
+        }, 40); // 40ms intervals for 4 seconds total (100 steps)
+
+
+
+                };
+            }
+
+            // Close the modal when the user clicks on <span> (x)
+            const span = document.getElementById('closeModal');
+            if (span) {
+                span.onclick = function() {
+                    modal.style.display = "none";
+                };
+            }
+
+            // Close the modal when the user clicks anywhere outside of the modal
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = "none";
+                }
+            };
+        } else {
+            console.warn("Element with ID 'winnerModal' not found.");
+        }
+    } else {
+        console.warn(`Element with ID ${player} not found.`);
+    }
 }
+
+
+
+/////////////
+
 
 
         // Function to show the dropdown and hide the edit button
@@ -419,9 +544,24 @@ function toggleTiebreak() {
                     serve1Element.innerHTML = '';
                 }
             }
-
             updateDatabase();
         }
+
+        function disableAllButtons() {
+            const buttons = document.querySelectorAll('#editButton, .ButtonCountersPoints, .ButtonCounters,.ButtonWin, button[data-disable="true"]');
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            buttons.forEach(button => {
+        button.disabled = true; // Disable the button
+        button.classList.add('disabled-button'); // Add the CSS class to grey it out
+    });
+    // Disable the selected checkboxes
+    checkboxes.forEach(checkbox => {
+        checkbox.disabled = true; // Disable the checkbox
+        checkbox.classList.add('disabled-button'); // Add the CSS class to grey it out
+    });
+
+
+}
 
         // Function to update the database
         async function updateDatabase() {
@@ -464,7 +604,8 @@ function toggleTiebreak() {
                     serve1: serve1,
                     serve2: serve2,
                     deleteflag: deleteflag,
-                    tiebreak_mode: tiebreak_mode
+                    tiebreak_mode: tiebreak_mode,
+                    winnervalue: winnervalue
                 })
             }).then(response => response.json()).then(() => {
                 console.log('Database updated successfully');

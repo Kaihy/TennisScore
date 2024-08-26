@@ -100,6 +100,17 @@
                 console.error('Error fetching initial filter data:', error);
             }
         }
+
+ // Registering the 'eq' helper in Handlebars
+ Handlebars.registerHelper('eq', function(a, b) {
+            return a === b;
+        });
+
+        // Registering the 'trophyCheck' helper in Handlebars
+        Handlebars.registerHelper('trophyCheck', function(winnervalue) {
+            return winnervalue === '1';
+        });
+
     </script>
 </head>
 <body>
@@ -155,7 +166,13 @@
                             <td class="spielwerte">{{spieler1_spiel3}}</td>
                             <td class="spielwerte">{{spieler1_spiel2}}</td>
                             <td class="spielwerte">{{spieler1_spiel}}</td>
-                            <td class="spielwertePunkte">{{spieler1_punkte}}</td>
+                            <td class="spielwertePunkte {{#if (eq winnervalue 1)}}disabled{{/if}}">
+                                {{#if (eq winnervalue 1)}}
+                                    <img src="/Images/trophy.png" alt="Trophy" class="TrophyImage">
+                                {{else}}
+                                    {{spieler1_punkte}}
+                                {{/if}}
+                            </td>
                             <td class="serveImage"> {{#if (eq serve1 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
                         </tr>
                         <tr>
@@ -167,7 +184,13 @@
                             <td class="spielwerte">{{spieler2_spiel3}}</td>
                             <td class="spielwerte">{{spieler2_spiel2}}</td>
                             <td class="spielwerte">{{spieler2_spiel}}</td>
-                            <td class="spielwertePunkte">{{spieler2_punkte}} </td>
+                            <td class="spielwertePunkte {{#if (eq winnervalue 2)}}disabled{{/if}}">
+                                {{#if (eq winnervalue 2)}}
+                                    <img src="/Images/trophy.png" alt="Trophy" class="TrophyImage">
+                                {{else}}
+                                    {{spieler2_punkte}}
+                                {{/if}}
+                            </td>
                             <td class="serveImage"> {{#if (eq serve2 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
                         </tr>
                         <tr>

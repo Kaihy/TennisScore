@@ -34,13 +34,14 @@ app.post('/add', async (req, res) => {
         serve1 ='1',
         serve2 ='0',
         tiebreak_mode = '0',
-        deleteflag = '0'
+        deleteflag = '0',
+        winnervalue = '0'
     } = req.body;
 
     try {
         await pool.query(
-            'INSERT INTO tennis_match (spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)',
-            [spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag]
+            'INSERT INTO tennis_match (spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
+            [spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue]
         );
         res.status(201).json({ message: 'Match added successfully' });
     } catch (err) {
@@ -80,13 +81,14 @@ app.patch('/update/:id', async (req, res) => {
         serve1,
         serve2,
         tiebreak_mode,
-        deleteflag
+        deleteflag,
+        winnervalue
     } = req.body;
 
     try {
         await pool.query(
-            'UPDATE tennis_match SET spieler1 = $1, spieler2 = $2, spieler1_satz = $3, spieler2_satz = $4, spieler1_spiel = $5, spieler1_spiel2 = $6,  spieler1_spiel3 = $7,spieler2_spiel = $8, spieler2_spiel2 = $9, spieler2_spiel3 = $10, spieler1_punkte = $11, spieler2_punkte = $12, spielstatus = $13, serve1 = $14, serve2 = $15, tiebreak_mode = $16, deleteflag = $17  WHERE id = $18',
-            [spieler1, spieler2, spieler1_Satz, spieler2_Satz, spieler1_Spiel,spieler1_Spiel2,spieler1_Spiel3, spieler2_Spiel, spieler2_Spiel2, spieler2_Spiel3, spieler1_Punkte, spieler2_Punkte, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, id]
+            'UPDATE tennis_match SET spieler1 = $1, spieler2 = $2, spieler1_satz = $3, spieler2_satz = $4, spieler1_spiel = $5, spieler1_spiel2 = $6,  spieler1_spiel3 = $7,spieler2_spiel = $8, spieler2_spiel2 = $9, spieler2_spiel3 = $10, spieler1_punkte = $11, spieler2_punkte = $12, spielstatus = $13, serve1 = $14, serve2 = $15, tiebreak_mode = $16, deleteflag = $17, winnervalue = $18  WHERE id = $19',
+            [spieler1, spieler2, spieler1_Satz, spieler2_Satz, spieler1_Spiel,spieler1_Spiel2,spieler1_Spiel3, spieler2_Spiel, spieler2_Spiel2, spieler2_Spiel3, spieler1_Punkte, spieler2_Punkte, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue, id]
         );
         res.status(200).json({ message: 'Match updated successfully' });
     } catch (err) {

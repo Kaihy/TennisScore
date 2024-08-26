@@ -158,7 +158,7 @@ th, td {
 }
 
 .ButtonCountersPoints,
-.ButtonCounters,.ButtonWin,
+.ButtonCounters,.ButtonWin, .ButtonDelete,
 .ButtonReset {
     display: block;           /* Make the button a block element */
     width: 100%;              /* Full width */
@@ -202,6 +202,7 @@ th, td {
 }
 
 .ButtonReset,
+.ButtonDelete,
 .Backbtn {
     background-color: #8d0036;
     height: 3em;
@@ -256,6 +257,60 @@ th, td {
 .tiebreak-toggle input[type="checkbox"] {
     transform: scale(4.2);
 }
+
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    height:80%;
+
+    text-align: center;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.trophyIcon {
+    height: 100px;
+    margin-right: 10px;
+}
+.disabled-button {
+    opacity: 0.1;
+    pointer-events: none; /* Prevents any interaction with the button */
+    cursor: not-allowed; /* Changes the cursor to indicate the button is disabled */
+}
+
+
 
 /* Media Query for 375x667 resolution */
 @media screen and (max-width: 375px) {

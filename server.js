@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt');
+const validator = require('validator'); // Add validator for email validation
 
 const app = express();
 const port = 3000;
@@ -20,6 +22,106 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+
+
+
+// User registration route
+app.post('/register', async (req, res) => {
+    const { username, password } = req.body;
+
+    
+
+    // Check if the username is a valid email
+    if (!validator.isEmail(username)) {
+        return res.status(400).send('Invalid email format');
+    }
+
+    try {
+        // Check if the username (email) already exists
+        const userCheck = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        if (userCheck.rows.length > 0) {
+            return res.status(400).send('Email already exists');
+        }
+
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Insert the new user into the database
+        await pool.query(
+            'INSERT INTO users (username, password) VALUES ($1, $2)',
+            [username, hashedPassword]
+        );
+
+        res.send('Registration successful');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+// User login route
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+
+
+    // Check if the username is a valid email
+    if (!validator.isEmail(username)) {
+        return res.status(400).send('Invalid email format');
+    }
+
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        if (result.rows.length > 0) {
+            const user = result.rows[0];
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (isMatch) {
+                // Send a JSON response with userId
+                res.json({ message: 'Login successful', user_id: user.id });
+            } else {
+                res.status(401).send('Invalid credentials');
+            }
+        } 
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+
+// Password renewal route
+app.post('/renew-password', async (req, res) => {
+    const { username, newPassword } = req.body;
+
+    try {
+        // Check if the user exists
+        const userCheck = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        if (userCheck.rows.length === 0) {
+            return res.status(404).send('User not found');
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password in the database
+        await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedPassword, username]);
+
+        res.send('Password renewed successfully');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+
+
+
+
+
+
+
+
 // Endpoint to handle adding a new match
 app.post('/add', async (req, res) => {
     const {
@@ -35,13 +137,14 @@ app.post('/add', async (req, res) => {
         serve2 ='0',
         tiebreak_mode = '0',
         deleteflag = '0',
-        winnervalue = '0'
+        winnervalue = '0',
+        user_id
     } = req.body;
 
     try {
         await pool.query(
-            'INSERT INTO tennis_match (spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)',
-            [spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue]
+            'INSERT INTO tennis_match (spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14 )',
+            [spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue, user_id]
         );
         res.status(201).json({ message: 'Match added successfully' });
     } catch (err) {

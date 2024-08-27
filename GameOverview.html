@@ -114,11 +114,25 @@
     </script>
 </head>
 <body>
-    <img src="/Images/tennis_Court.jpg" alt="Description of the image">
-    <h1>Spielübersicht</h1>
-    <div class="clearfix">
-        <button type="button" onclick="IndexHtmlUrl()" class="MainPage">Zurück zur Main Page</button>
+  <!---Burger Menu-->
+  <div class="burger-menu">
+    <div class="burger-icon" onclick="toggleBurgerMenu()">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
     </div>
+    <nav class="menu">
+        <ul>
+            <li><a href="http://127.0.0.1:5500/index.html">Hauptseite</a></li>
+            <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+        </ul>
+    </nav>
+</div>
+<!---Burger Menu Ende-->
+
+    <img src="/Images/Tennis_CourtBlue2.webp" alt="Description of the image">
+    <h1>Spielübersicht</h1>
+   
     
     <div class="filter-container">
         <label for="filter-courtnumber">Courtnumber:</label>
@@ -213,9 +227,14 @@
     </script>
 
     <script>
-        function IndexHtmlUrl() {
-            window.location.href = 'http://127.0.0.1:5500/index.html';
-        }
+//// Burger Menu///
+function toggleBurgerMenu() {
+    const menu = document.querySelector('.menu');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+//// Burger Menu Ende///
+
+      
 
         function playerEditButton(id) {   
             window.location.href = `http://127.0.0.1:5500/edit3.html?id=${id}`;

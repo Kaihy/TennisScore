@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gelöschte Spiele Übersicht </title>
-    <link rel="stylesheet" href="css/GameOverviewStyles.css">
+    <link rel="stylesheet" href="css/DeleteOverview.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script defer src="/handlebars/handlebars.js"></script>
     <script>
@@ -102,11 +102,25 @@
     </script>
 </head>
 <body>
-    <img src="/Images/tennis_Court.jpg" alt="Description of the image">
-    <h1>Gelöschte Spiele</h1>
-    <div class="clearfix">
-        <button type="button" onclick="IndexHtmlUrl()" class="MainPage">Zurück zur Main Page</button>
+  <!---Burger Menu-->
+  <div class="burger-menu">
+    <div class="burger-icon" onclick="toggleBurgerMenu()">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
     </div>
+    <nav class="menu">
+        <ul>
+            <li><a href="http://127.0.0.1:5500/index.html">Hauptseite</a></li>
+            <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+        </ul>
+    </nav>
+</div>
+<!---Burger Menu Ende-->
+
+    <img src="/Images/tennis_Court.webp" alt="Description of the image">
+    <h1>Gelöschte Spiele</h1>
+    
     
     <div class="filter-container">
         <label for="filter-courtnumber">Courtnumber:</label>
@@ -201,9 +215,12 @@
     </script>
 
     <script>
-           function IndexHtmlUrl() {
-            window.location.href = 'http://127.0.0.1:5500/index.html';
-        }
+        //// Burger Menu///
+function toggleBurgerMenu() {
+    const menu = document.querySelector('.menu');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+//// Burger Menu Ende///
 
 
 

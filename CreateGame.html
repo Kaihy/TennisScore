@@ -8,9 +8,22 @@
     <link rel="stylesheet" href="css/CreateGameStyles.css">
 </head>
 <body>
-    <div class="clearfix">
-        <button type="button" onclick="IndexHtmlUrl()" class="MainPage">Zurück zur Main Page</button>
+<!---Burger Menu-->
+<div class="burger-menu">
+    <div class="burger-icon" onclick="toggleBurgerMenu()">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
     </div>
+    <nav class="menu">
+        <ul>
+            <li><a href="http://127.0.0.1:5500/index.html">Hauptseite</a></li>
+            <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+        </ul>
+    </nav>
+</div>
+<!---Burger Menu Ende-->
+
     <form id="sheetdb-form">
         <div class="container">
             <h1>Neues Spiel anlegen</h1>
@@ -61,18 +74,24 @@
     
             <div class="clearfix">
                 <button type="submit" class="signupbtn">Save</button>
-                <button type="button" onclick="openViewUrl()" class="cancelbtn">Cancel</button>
             </div>
         </div>
     </form>
     
     <script>
+
+        //// Burger Menu///
+        function toggleBurgerMenu() {
+       const menu = document.querySelector('.menu');
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
+        //// Burger Menu Ende///
+
+
         function openViewUrl() {
             window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
         }
-        function IndexHtmlUrl() {
-            window.location.href = 'http://127.0.0.1:5500/index.html';
-        }
+    
 
         document.getElementById('sheetdb-form').addEventListener('submit', async function(e) {
             e.preventDefault();

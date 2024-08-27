@@ -4,14 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spielübersicht aller Spiele</title>
-    <link rel="stylesheet" href="css/GameOverviewStyles.css">
+    <link rel="stylesheet" href="css/IndexStyles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script defer src="/handlebars/handlebars.js"></script>
 </head>
 
 
     <body>
+    <!---Burger Menu-->
+        <div class="burger-menu">
+            <div class="burger-icon" onclick="toggleBurgerMenu()">
+                <div class="line"></div>
+                <div class="line"></div>
+                <div class="line"></div>
+            </div>
+            <nav class="menu">
+                <ul>
+                    <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+<!---Burger Menu Ende-->
+
+
+
     <script>
+
+//// Burger Menu///
+function toggleBurgerMenu() {
+    const menu = document.querySelector('.menu');
+    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+}
+//// Burger Menu Ende///
+
+
         function openOverviewURL() {
             window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
         }

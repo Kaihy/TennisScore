@@ -1,15 +1,21 @@
 /* General body and other styles */
 body {
-    font-family: Verdana, sans-serif;
-    font-weight: 200;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
     color: #515050;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
 }
 
 h1 {
-    color: rgb(255, 255, 255);
+    color: #fff;
     text-align: center;
     position: relative;
     top: -200px;
+    font-size: clamp(2em, 4vw, 3em);
+    margin: 0;
 }
 
 .CourtTable {
@@ -18,46 +24,45 @@ h1 {
 
 .CourtBox {
     background-color: #CAD4DB;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24);
     border-radius: 25px;
-    padding: 10px 20px 10px 10px;
+    padding: 20px;
     margin-top: 40px;
-    width: 150%;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .Courtnumber {
     font-weight: 800;
-    font-size: 4em;
-    padding: 30px 80px 20px 0px;
+    font-size: clamp(3em, 6vw, 4em);
+    padding: 20px 0;
 }
 
 .DisplayHeadlines {
     display: flex;
-    gap: 32px;
+    gap: 2rem;
+    flex-wrap: wrap;
 }
 
-.DisplayGameTitles {
+.DisplayGameTitles, .DisplayGameNumbers {
     font-weight: 200;
-    font-size: 2em;
-}
-
-.DisplayGameNumbers {
-    font-weight: 100;
-    font-size: 2em;
+    font-size: clamp(1.5em, 3vw, 2em);
     text-align: center;
 }
 
 .spielerverein {
-    font-size: 5em;
+    font-size: clamp(2em, 5vw, 5em);
     padding: 0 8px;
 }
 
 .spielerfeld {
     background-color: #ffffff;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24);
     border-radius: 12px;
-    padding: 0 80px;
-    font-size: 3em;
+    padding: 0 40px;
+    font-size: clamp(2em, 4vw, 3em);
     height: 6em;
     display: flex;
     align-items: center;
@@ -66,82 +71,72 @@ h1 {
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
-    min-width: 0;
     box-sizing: border-box;
 }
 
 .spielerfeld input {
-    width: 100%; /* Make input field take full width of the parent */
-    height: 100%; /* Make input field take full height of the parent */
-    font-size: 1em; /* Set font size */
-    border: none; /* Remove default border */
-    padding: 0 20px; /* Add padding */
-    box-sizing: border-box; /* Ensure padding does not affect the width */
+    width: 100%;
+    height: 100%;
+    font-size: 1em;
+    border: none;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
-.spielwerte {
+.spielwerte, .spielwertePunkte {
     background-color: #ffffff;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24);
     border-radius: 12px;
     padding: 10px;
-    font-size: 6em;
+    font-size: clamp(3em, 6vw, 6em);
     text-align: center;
 }
 
 .spielwertePunkte {
     background-color: #515050;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
-    border-radius: 12px;
-    padding: 10px;
-    font-size: 6em;
     color: #ffffff;
-    text-align: center;
 }
 
 .CourtDescription > span,
 .CourtDescription2 > span {
-    padding: 20px 20px 10px 0px;
+    padding: 20px 0;
     display: inline-block;
     text-align: center;
-    font-size: 9px;
+    font-size: 0.9em;
     font-weight: 200;
 }
 
-.signupbtn,
-.editGame,
-.editButton,
-.saveButton,
+button,
 .DropDownOptions {
     margin-top: 10px;
-    background-color: #ffffff62;
-    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    background-color: rgba(255, 255, 255, 0.38);
+    box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24);
     border-radius: 12px;
     border: none;
     font-weight: 800;
+    cursor: pointer;
 }
 
-.signupbtn,
-.editButton,
-.saveButton {
+button {
     height: 60px;
     width: 100%;
     padding: 10px;
-    font-size: 30px;
+    font-size: clamp(1.5em, 4vw, 2em);
 }
 
 .editGame {
     height: 70px;
     width: 50%;
-    font-size: 15px;
+    font-size: clamp(1em, 2vw, 1.5em);
     font-weight: 500;
     color: #ffffff;
-    margin-left: 25%;
+    margin: 0 auto;
 }
 
 .DropDownOptions {
     height: 60px;
     width: 20%;
-    font-size: 40px;
+    font-size: clamp(1.5em, 4vw, 2em);
     font-weight: 400;
 }
 
@@ -157,38 +152,16 @@ th, td {
     font-size: 2em;
 }
 
-.ButtonCountersPoints,
-.ButtonCounters,.ButtonWin, .ButtonDelete,
-.ButtonReset {
-    display: block;           /* Make the button a block element */
-    width: 100%;              /* Full width */
-    padding: 100px;           /* Padding */
-    font-size: 2em;           /* Font size */
-    cursor: pointer;          /* Pointer cursor on hover */
-    color: white;             /* Text color */
-    border: none;             /* Remove border */
-    background-color: #007BFF;/* Background color (example) */
-    text-align: center;       /* Center the text */
-    margin: 0 auto;           /* Center the button horizontally */
-}
-
-.Backbtn {
-    width: 100%;              /* Full width */
-    padding: 10px;            /* Padding */
-    font-size: 4em;           /* Font size */
-    cursor: pointer;          /* Pointer cursor on hover */
-    color: white;             /* Text color */
-    border: none;             /* Remove border */
-    background-color: #007BFF;/* Background color (example) */
-    text-align: center;       /* Center the text */
-    display: block;           /* Make the button a block element */
-}
-
-.center-container {
-    width: 100%;              /* Full width of the parent container */
-    max-width: 600px;         /* Optional: set a max-width */
-    margin: 0 auto;           /* Center the container horizontally */
-    padding: 10px;            /* Optional: add some padding */
+.ButtonCountersPoints, .ButtonCounters, .ButtonWin, .ButtonDelete, .ButtonReset, .Backbtn {
+    display: block;
+    width: 100%;
+    padding: 20px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: white;
+    border: none;
+    text-align: center;
+    margin: 0 auto;
 }
 
 .ButtonCountersPoints {
@@ -201,76 +174,74 @@ th, td {
     height: 2em;
 }
 
-.ButtonReset,
-.ButtonDelete,
-.Backbtn {
+.ButtonReset, .ButtonDelete, .Backbtn {
     background-color: #8d0036;
     height: 3em;
 }
+
 .ButtonWin {
     background-color: #00bc13;
     height: 3em;
 }
 
 .serveCell {
-    width: 50px; /* Set a fixed width */
-    height: 50px; /* Set a fixed height */
-    text-align: center; /* Center text horizontally */
-    vertical-align: middle; /* Center text vertically */
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .serveImage {
-    max-width: 100%; /* Ensure the image fits within the cell */
-    max-height: 100%; /* Ensure the image fits within the cell */
+    max-width: 100%;
+    max-height: 100%;
 }
 
-/* Placeholder for the image container */
 .serveImageContainer {
-    width: 40%; /* Same width as the image */
-    height: auto; /* Adjust height according to aspect ratio */
-    display: inline-block; /* Ensure it takes up space */
-    background-color: #f0f0f0; /* Placeholder background color */
+    width: 40%;
+    height: auto;
+    display: inline-block;
+    background-color: #f0f0f0;
 }
 
 .Subinfos {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    font-size: 2em;
+    font-size: 1.5em;
 }
 
-.Subinfos > span,
-.Subinfos > select,
-.Subinfos > button {
+.Subinfos > span, .Subinfos > select, .Subinfos > button {
     margin: 2px 0;
 }
+
 .tiebreak-toggle {
     margin: 15px 0;
     display: flex;
     align-items: center;
 }
+
 .tiebreak-toggle label {
     margin-right: 20px;
     font-weight: bold;
-    font-size: 3.5em;
-}
-.tiebreak-toggle input[type="checkbox"] {
-    transform: scale(4.2);
+    font-size: 2em;
 }
 
+.tiebreak-toggle input[type="checkbox"] {
+    transform: scale(2.5);
+}
 
 /* The Modal (background) */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 1; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Modal Content */
@@ -280,9 +251,9 @@ th, td {
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
-    height:80%;
-
+    height: 80%;
     text-align: center;
+    border-radius: 12px;
 }
 
 /* The Close Button */
@@ -293,8 +264,7 @@ th, td {
     font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.close:hover, .close:focus {
     color: black;
     text-decoration: none;
     cursor: pointer;
@@ -304,15 +274,21 @@ th, td {
     height: 100px;
     margin-right: 10px;
 }
+
 .disabled-button {
-    opacity: 0.1;
-    pointer-events: none; /* Prevents any interaction with the button */
-    cursor: not-allowed; /* Changes the cursor to indicate the button is disabled */
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
 }
 
+.center-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+}
 
-
-/* Media Query for 375x667 resolution */
+/* Media Query for small screens */
 @media screen and (max-width: 375px) {
     h1 {
         font-size: 1.5em;
@@ -326,14 +302,10 @@ th, td {
 
     .DisplayHeadlines {
         flex-direction: column;
-        gap: 16px;
+        gap: 1rem;
     }
 
-    .DisplayGameTitles {
-        font-size: 2em;
-    }
-
-    .DisplayGameNumbers {
+    .DisplayGameTitles, .DisplayGameNumbers {
         font-size: 1.5em;
     }
 
@@ -346,16 +318,12 @@ th, td {
         font-size: 1.8em;
     }
 
-    .spielwerte,
-    .spielwertePunkte {
+    .spielwerte, .spielwertePunkte {
         font-size: 2em;
         padding: 5px;
     }
 
-    .signupbtn,
-    .editButton,
-    .saveButton,
-    .DropDownOptions {
+    button {
         height: 40px;
         font-size: 1.2em;
     }
@@ -372,10 +340,7 @@ th, td {
         padding: 5px;
     }
 
-    .ButtonCountersPoints,
-    .ButtonCounters,
-    .ButtonReset,
-    .Backbtn {
+    .ButtonCountersPoints, .ButtonCounters, .ButtonReset, .Backbtn {
         padding: 6px;
         font-size: 1.5em;
     }
@@ -386,7 +351,6 @@ th, td {
 
     .serveImageContainer {
         width: 30%;
-        height: auto;
     }
 
     .Subinfos {

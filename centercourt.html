@@ -12,7 +12,7 @@
 
 async function fetchAndUpdateMatches() {
     try {
-        const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+        const response = await fetch(`${config.apiBaseUrl}/matches/`); // Replace with your API endpoint
         const data = await response.json();
         allMatches = data; // Store all matches globally
         updateMatches();
@@ -181,8 +181,15 @@ function showGameOverview() {
     </script>
 
     <script>
+        // Global configuration object
+        const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
+
+
         function playerEditButton(id) {   
-            window.location.href = `http://127.0.0.1:5500/edit3.html?id=${id}`;
+            window.location.href = `${config.baseUrl}/edit3.html?id=${id}`;
             console.log(id);
         }
 

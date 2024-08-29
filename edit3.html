@@ -162,6 +162,11 @@
 
 
     <script>
+// Global configuration object
+const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
 
         let tiebreak_mode = 1; // Default value, will be overwritten by fetched data
         let generated_key = '';  // Declare globally
@@ -172,7 +177,7 @@
 
         // Open Link to Main Page
         function openViewUrl() {
-            window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
+            window.location.href = `${config.baseUrl}/GameOverview.html`;
         }
 
         // Fetch ID of URL
@@ -194,7 +199,7 @@
 
         // JavaScript to fetch and display match
         function fetchData(id) {
-            fetch(`http://localhost:3000/matches/`)
+            fetch(`${config.apiBaseUrl}/matches/`)
                 .then(response => response.json())
                 .then(data => {
                     const match = data.find(item => item.id == Idextracted);
@@ -447,7 +452,7 @@ function updateWin(player) {
             if (width >= 100) {
                 clearInterval(interval);
                 // Redirect to the desired URL after the loading bar reaches 100%
-                window.location.href = 'http://127.0.0.1:5500/GameOverview.html'; // Change to your desired URL
+                window.location.href = `${config.baseUrl}/GameOverview.html`; // Change to your desired URL
             }
         }, 40); // 40ms intervals for 4 seconds total (100 steps)
 
@@ -504,7 +509,7 @@ async function updateGeneratedKey() {
 
 
 
-        fetch(`http://localhost:3000/generatedkey/${Idextracted}`, {
+        fetch(`${config.apiBaseUrl}/generatedkey/${Idextracted}`, {
             method: 'PATCH',
             headers: {
                 'Accept': 'application/json',
@@ -647,7 +652,7 @@ async function updateGeneratedKey() {
             const serve1 = document.getElementById('serve1').innerHTML.trim() ? 1 : 0;
             const serve2 = document.getElementById('serve2').innerHTML.trim() ? 1 : 0;
 
-            fetch(`http://localhost:3000/update/${Idextracted}`, {
+            fetch(`${config.apiBaseUrl}/update/${Idextracted}`, {
                 method: 'PATCH',
                 headers: {
                     'Accept': 'application/json',

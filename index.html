@@ -20,7 +20,7 @@
             </div>
             <nav class="menu">
                 <ul>
-                    <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+                    <li onclick="UserLoginHtmlUrl()">Login</a></li>
                 </ul>
             </nav>
         </div>
@@ -29,6 +29,11 @@
 
 
     <script>
+// Global configuration object
+    const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
 
 //// Burger Menu///
 function toggleBurgerMenu() {
@@ -36,18 +41,20 @@ function toggleBurgerMenu() {
     menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
 }
 //// Burger Menu Ende///
-
+function UserLoginHtmlUrl() {
+            window.location.href = `${config.baseUrl}/login.html`;
+        }
 
         function openOverviewURL() {
-            window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
+            window.location.href = `${config.baseUrl}/GameOverview.html`;
         }
 
         function DeleteOverviewURL(id) {   
-            window.location.href = `http://127.0.0.1:5500/DeleteOverview.html`;
+            window.location.href = `${config.baseUrl}/DeleteOverview.html`;
         }
 
         function openViewUrl() {
-            window.location.href = 'http://127.0.0.1:5500/CreateGame.html';
+            window.location.href = `${config.baseUrl}/CreateGame.html`;
         };
 
         const userId = localStorage.getItem('userId');

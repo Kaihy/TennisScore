@@ -12,7 +12,7 @@
 
         async function fetchAndUpdateMatches() {
             try {
-                const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+                const response = await fetch(`${config.apiBaseUrl}/matches/`); // Replace with your API endpoint
                 const data = await response.json();
                 allMatches = data; // Store all matches globally
                 updateMatches();
@@ -92,7 +92,7 @@
 
         async function fetchInitialFilters() {
             try {
-                const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+                const response = await fetch(`${config.apiBaseUrl}/matches/`); // Replace with your API endpoint
                 const data = await response.json();
                 populateFilters(data);
             } catch (error) {
@@ -111,8 +111,8 @@
     </div>
     <nav class="menu">
         <ul>
-            <li><a href="http://127.0.0.1:5500/index.html">Hauptseite</a></li>
-            <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+            <li onclick="IndexHtmlUrl()">Hauptseite</a></li>
+            <li onclick="UserLoginHtmlUrl()">Logout</a></li>
         </ul>
     </nav>
 </div>
@@ -215,6 +215,12 @@
     </script>
 
     <script>
+// Global configuration object
+const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
+
         //// Burger Menu///
 function toggleBurgerMenu() {
     const menu = document.querySelector('.menu');
@@ -222,7 +228,13 @@ function toggleBurgerMenu() {
 }
 //// Burger Menu Ende///
 
-
+function UserLoginHtmlUrl() {
+            window.location.href = `${config.baseUrl}/login.html`;
+        }
+       // Function to redirect to the index page after login
+       function IndexHtmlUrl() {
+            window.location.href = `${config.baseUrl}/index.html`;
+        }
 
 
 
@@ -234,7 +246,7 @@ function toggleBurgerMenu() {
     console.log("Undo Delete button clicked for ID:", id); // Log the ID
 
     try {
-        const response = await fetch(`http://localhost:3000/delete/${id}`, {
+        const response = await fetch(`${config.apiBaseUrl}/delete/${id}`, {
             method: 'PATCH',
             headers: {
                 'Accept': 'application/json',

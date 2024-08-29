@@ -12,7 +12,7 @@
 
         async function fetchAndUpdateMatches() {
             try {
-                const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+                const response = await fetch(`${config.apiBaseUrl}/matches/`); // Replace with your API endpoint
                 const data = await response.json();
                 allMatches = data; // Store all matches globally
                 updateMatches();
@@ -23,24 +23,27 @@
 
         function updateMatches() {
     const filters = getFilters();
+    
     const filteredData = allMatches.filter(match => {
-        // Filter matches where "deleteflag" is either 1 or 0
+        // Check deleteflag condition
         if (match.deleteflag !== 0) {
             return false;
         }
         
-        // Apply other filters
-        return (!filters.courtnumber || match.courtnumber.toString() === filters.courtnumber) &&
-               (!filters.spielklasse || match.spielklasse === filters.spielklasse) &&
-               (!filters.altersklasse || match.altersklasse === filters.altersklasse) &&
-               (!filters.status || match.spielstatus === filters.status);
+        // Apply filters
+        const courtNumberMatch = !filters.courtnumber || match.courtnumber.toString() === filters.courtnumber;
+        const spielklasseMatch = !filters.spielklasse || match.spielklasse === filters.spielklasse;
+        const altersklasseMatch = !filters.altersklasse || match.altersklasse === filters.altersklasse;
+        const statusMatch = !filters.status || match.spielstatus === filters.status;
+
+        // Return true if all filter conditions match
+        return courtNumberMatch && spielklasseMatch && altersklasseMatch && statusMatch;
     });
 
-    // Sort by ID if no filters are applied
-    if (!filters.courtnumber && !filters.spielklasse && !filters.altersklasse && !filters.status) {
-        filteredData.sort((a, b) => a.id - b.id);
-    }
+    // Sort by ID in ascending order
+    filteredData.sort((a, b) => a.id - b.id);
 
+    // Update the UI with filtered and sorted data
     const matchesContainer = document.getElementById('matches-container');
     const source = document.getElementById('matches-template').innerHTML;
     const template = Handlebars.compile(source);
@@ -93,7 +96,7 @@
 
         async function fetchInitialFilters() {
             try {
-                const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+                const response = await fetch(`${config.apiBaseUrl}/matches/`); // Replace with your API endpoint
                 const data = await response.json();
                 populateFilters(data);
             } catch (error) {
@@ -123,13 +126,12 @@
     </div>
     <nav class="menu">
         <ul>
-            <li><a href="http://127.0.0.1:5500/index.html">Hauptseite</a></li>
-            <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+            <li onclick="IndexHtmlUrl()">Hauptseite</a></li>
+            <li onclick="UserLoginHtmlUrl()">Logout</a></li>
         </ul>
     </nav>
 </div>
 <!---Burger Menu Ende-->
-
     <img src="/Images/Tennis_CourtBlue2.webp" alt="Description of the image">
     <h1>Spielübersicht</h1>
    
@@ -227,6 +229,12 @@
     </script>
 
     <script>
+// Global configuration object
+const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
+
 //// Burger Menu///
 function toggleBurgerMenu() {
     const menu = document.querySelector('.menu');
@@ -234,10 +242,17 @@ function toggleBurgerMenu() {
 }
 //// Burger Menu Ende///
 
-      
+
+function UserLoginHtmlUrl() {
+            window.location.href = `${config.baseUrl}/login.html`;
+        }
+       // Function to redirect to the index page after login
+       function IndexHtmlUrl() {
+            window.location.href = `${config.baseUrl}/index.html`;
+        }
 
         function playerEditButton(id) {   
-            window.location.href = `http://127.0.0.1:5500/edit3.html?id=${id}`;
+            window.location.href = `${config.baseUrl}/edit3.html?id=${id}`;
             console.log(id);
         }
 

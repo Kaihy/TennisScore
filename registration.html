@@ -16,7 +16,7 @@
         </div>
         <nav class="menu">
             <ul>
-                <li><a href="http://127.0.0.1:5500/login.html">Login</a></li>
+                <li onclick="UserLoginHtmlUrl()">Login</a></li>
             </ul>
         </nav>
     </div>
@@ -33,7 +33,10 @@
         <button type="submit">Register</button>
     </form>
     <script>
-
+   const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
 
 //// Burger Menu///
 function toggleBurgerMenu() {
@@ -42,7 +45,7 @@ function toggleBurgerMenu() {
 }
 //// Burger Menu Ende///
 function UserLoginHtmlUrl() {
-            window.location.href = 'http://127.0.0.1:5500/login.html';
+            window.location.href = `${config.baseUrl}/login.html`;
         }
     
    
@@ -55,7 +58,7 @@ function UserLoginHtmlUrl() {
 
     
         try {
-            const response = await fetch('http://localhost:3000/register', {
+            const response = await fetch(`${config.apiBaseUrl}/register`, {
                 method: 'POST', // Ensure this is POST
                 headers: {
                     'Content-Type': 'application/json',

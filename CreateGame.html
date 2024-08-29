@@ -17,8 +17,8 @@
     </div>
     <nav class="menu">
         <ul>
-            <li><a href="http://127.0.0.1:5500/index.html">Hauptseite</a></li>
-            <li><a href="http://127.0.0.1:5500/login.html">Logout</a></li>
+            <li onclick="IndexHtmlUrl()">Hauptseite</a></li>
+            <li onclick="UserLoginHtmlUrl()">Logout</a></li>
         </ul>
     </nav>
 </div>
@@ -79,6 +79,12 @@
     </form>
     
     <script>
+        // Global configuration object
+const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
+
 
         //// Burger Menu///
         function toggleBurgerMenu() {
@@ -87,9 +93,16 @@
         }
         //// Burger Menu Ende///
 
+        function UserLoginHtmlUrl() {
+            window.location.href = `${config.baseUrl}/login.html`;
+        }
+       // Function to redirect to the index page after login
+       function IndexHtmlUrl() {
+            window.location.href = `${config.baseUrl}/index.html`;
+        }
 
         function openViewUrl() {
-            window.location.href = 'http://127.0.0.1:5500/GameOverview.html';
+            window.location.href = `${config.baseUrl}/GameOverview.html`;
         }
     
 
@@ -112,7 +125,7 @@
                 console.warn('User ID not found in local storage.');
             }
    
-            fetch('http://localhost:3000/add', {
+            fetch(`${config.apiBaseUrl}/add`, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',

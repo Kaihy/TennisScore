@@ -22,19 +22,26 @@
     <button type="button" onclick="RenewPasswordHtmlUrl()" class="PasswordRenew">Password zurücksetzen</button>
 
     <script>
+  // Global configuration object
+  const config = {
+            baseUrl: 'http://127.0.0.1:5500',
+            apiBaseUrl: 'http://localhost:3000'
+        };
+
+
         // Function to redirect to the registration page
         function UserRegistrationHtmlUrl() {
-            window.location.href = 'http://127.0.0.1:5500/registration.html';
+            window.location.href = `${config.baseUrl}/registration.html`;
         }
 
         // Function to redirect to the password renewal page
         function RenewPasswordHtmlUrl() {
-            window.location.href = 'http://127.0.0.1:5500/renewPassword.html';
+            window.location.href = `${config.baseUrl}/renewPassword.html`;
         }
 
         // Function to redirect to the index page after login
         function IndexHtmlUrl() {
-            window.location.href = 'http://127.0.0.1:5500/index.html';
+            window.location.href = `${config.baseUrl}/index.html`;
         }
 
         // Handle the login form submission
@@ -45,7 +52,7 @@
             const password = document.getElementById('password').value;
     
             try {
-                const response = await fetch('http://localhost:3000/login', {
+                const response = await fetch(`${config.apiBaseUrl}/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

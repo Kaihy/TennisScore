@@ -10,9 +10,6 @@
 
 </head>
 <body>
-
-
-
     <!-- Handlebars template -->
     <script id="matches-template" type="text/x-handlebars-template">
     <div class="CourtBox">    
@@ -152,12 +149,22 @@
 </div>
 
 
+
+
+
     <!-- Container to display the match -->
     <div id="matches-container"></div>
+
+<!--  Generate KEY-->
+<p class="KeyCenterCourt"> Center Court- Key Generator</p>
+    <button id="generateButton">Generate Key</button>
+    <p class="KeyCenterCourtText" id="keyDisplay"></p>
+
 
     <script>
 
         let tiebreak_mode = 1; // Default value, will be overwritten by fetched data
+        let generated_key = '';  // Declare globally
 
         Handlebars.registerHelper('eq', function (a, b) {
             return a === b;
@@ -196,7 +203,8 @@
                         // Update the tiebreak_mode from fetched data
                         tiebreak_mode = match.tiebreak_mode;
                         winnervalue = match.winnervalue;
-
+                
+               
                         // Compile and display the match data using Handlebars
                         const source = document.getElementById('matches-template').innerHTML;
                         const template = Handlebars.compile(source);
@@ -225,10 +233,7 @@
                     // Clear the icon if winnervalue is not 1
                      spieler2_punkte.innerHTML = trophyIcon;
                      disableAllButtons()
-                    } else if (winnervalue === 0) {
-                    // Clear the icon if winnervalue is not 1
-                    document.getElementById('spieler1_punkte').innerText = '0';
-                document.getElementById('spieler2_punkte').innerText = '0';
+                    
                      
                      
                 }
@@ -473,6 +478,60 @@ function updateWin(player) {
     }
 }
 
+
+// Function to generate a new key
+    function generateKey() {
+        const now = new Date();
+        const year = now.getFullYear().toString().slice(-2);  // Last two digits of the year
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');  // Months are zero-indexed, so add 1
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+
+        // Generate a 7-digit key based on time components
+        generated_key = year + month + day + hours + minutes + seconds;
+        generated_key = generated_key.slice(-7);  // Slice the last 7 digits
+    }
+
+   // Function to update the generated key in the database
+ 
+async function updateGeneratedKey() {
+    if (!Idextracted) {
+        console.error('No ID extracted from URL.');
+        return;
+    }
+
+
+
+        fetch(`http://localhost:3000/generatedkey/${Idextracted}`, {
+            method: 'PATCH',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                generated_key: generated_key
+            })
+        }).then(response => response.json()).then(() => {
+            console.log('Generated key updated successfully in the database');
+        }).catch(error => {
+            console.error('Error updating generated key:', error);
+        });
+    }
+
+    document.getElementById('generateButton').addEventListener('click', () => {
+        let userChoice = confirm("Willst du einen neuen Key kreieren?" + "Alle aktuellen Center Court Verbindungen gehen dabei verloren?");
+        if (userChoice) {
+
+        generateKey();
+        document.getElementById('keyDisplay').textContent = 'Key Generated!';
+        console.log(generated_key + " Stored in DB");
+        updateGeneratedKey();  // Call the new route to update only the generated key
+        document.getElementById('keyDisplay').textContent = `The key is: ${generated_key}`;
+        return;
+    }  
+    });
 
 
 /////////////

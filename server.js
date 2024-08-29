@@ -219,7 +219,24 @@ app.patch('/delete/:id', async (req, res) => {
     }
 });
 
+// Endpoint to update Center Court Key
+app.patch('/generatedkey/:id', async (req, res) => {
+    const { id } = req.params;
+    const {
+        generated_key
+    } = req.body;
 
+    try {
+        await pool.query(
+            'UPDATE tennis_match SET generated_key = $1  WHERE id = $2',
+            [generated_key, id]
+        );
+        res.status(200).json({ message: 'Match updated successfully' });
+    } catch (err) {
+        console.error('Error updating match:', err);
+        res.status(500).json({ error: 'An error occurred while updating the match' });
+    }
+});
 
 
 

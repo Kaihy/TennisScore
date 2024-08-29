@@ -27,7 +27,7 @@ h1 {
     box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24);
     border-radius: 25px;
     padding: 20px;
-    margin-top: 40px;
+    margin-top: 0px;
     width: 100%;
     max-width: 1200px;
     margin-left: auto;
@@ -63,7 +63,7 @@ h1 {
     border-radius: 12px;
     padding: 0 40px;
     font-size: clamp(2em, 4vw, 3em);
-    height: 6em;
+    height: 3em;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -360,4 +360,9 @@ th, td {
     .CourtBox {
         margin-top: 20px;
     }
+}
+.KeyCenterCourt,.KeyCenterCourtText{
+    padding: 2px;
+    font-size: 2.5em;
+    text-align: center;
 }

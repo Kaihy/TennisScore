@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Center Court</title>
+    <link rel="stylesheet" href="css/centercourtStyles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
+    <script defer src="/handlebars/handlebars.js"></script>
+    <script>
+    let allMatches = [];
+
+async function fetchAndUpdateMatches() {
+    try {
+        const response = await fetch('http://localhost:3000/matches/'); // Replace with your API endpoint
+        const data = await response.json();
+        allMatches = data; // Store all matches globally
+        updateMatches();
+    } catch (error) {
+        console.error('Error fetching match data:', error);
+    }
+}
+
+function updateMatches() {
+    const filters = getFilters();
+    let filteredData = [];
+
+    if (filters.generatedKey) {
+        filteredData = allMatches.filter(match => {
+            // Filter strictly by generated_key
+            return match.generated_key && match.generated_key.toString() === filters.generatedKey;
+        });
+    }
+
+    const matchesContainer = document.getElementById('matches-container');
+    const source = document.getElementById('matches-template').innerHTML;
+    const template = Handlebars.compile(source);
+    const newHtml = template({ matches: filteredData });
+
+    // Parse the new HTML into a document fragment for easier DOM manipulation
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = newHtml;
+
+    const newNodes = tempDiv.childNodes;
+    const oldNodes = matchesContainer.childNodes;
+
+    // Replace only the nodes that have changed
+    for (let i = 0; i < newNodes.length; i++) {
+        if (!oldNodes[i] || newNodes[i].outerHTML !== oldNodes[i].outerHTML) {
+            if (oldNodes[i]) {
+                matchesContainer.replaceChild(newNodes[i].cloneNode(true), oldNodes[i]);
+            } else {
+                matchesContainer.appendChild(newNodes[i].cloneNode(true));
+            }
+        }
+    }
+}
+
+function getFilters() {
+    return {
+        generatedKey: document.getElementById('user-input').value
+    };
+}
+
+function applyFilters() {
+    console.log('Filters applied:', getFilters());
+    updateMatches();
+}
+
+window.onload = function() {
+    fetchAndUpdateMatches();
+    setInterval(fetchAndUpdateMatches, 5000); // Update every 5 seconds
+};
+
+// Registering the 'eq' helper in Handlebars
+Handlebars.registerHelper('eq', function(a, b) {
+    return a === b;
+});
+
+// Registering the 'trophyCheck' helper in Handlebars
+Handlebars.registerHelper('trophyCheck', function(winnervalue) {
+    return winnervalue === '1';
+});
+
+function showGameOverview() {
+    const userInput = document.getElementById('user-input').value;
+
+    if (userInput.trim() !== '') {
+        document.querySelector('.input-container').style.display = 'none'; // Hide input container
+        document.getElementById('game-overview').style.display = 'block'; // Show game overview
+        applyFilters();
+    }
+}
+    </script>
+</head>
+<body>
+    <h1>Center Court</h1>
+    
+    <div class="input-container">
+        <label for="user-input">Center Court Key eingeben:</label>
+        <input type="text" id="user-input" placeholder="Enter key">
+        <button onclick="showGameOverview()">Submit</button>
+    </div>
+
+    <div id="game-overview" style="display: none;">
+        <div id="matches-container"></div>
+    </div>
+
+    <script id="matches-template" type="text/x-handlebars-template">
+        {{#each matches}}
+        <div class="CourtBox">    
+            <div class="CourtData">
+                <span class="Courtnumber">Courtnumber: {{courtnumber}}</span>
+                <table class="CourtTable">
+                    <thead>
+                        <tr class="DisplayGameTitles">
+                            <th colspan="1">Spielername</th>
+                            <th colspan="1">Set</th>
+                            <th colspan="3">Games</th>
+                            <th colspan="1">Points</th>
+                        </tr>
+                        <tr class="DisplayGameNumbers">
+                            <th></th>
+                            <th></th>
+                            <th>3</th>
+                            <th>2</th>
+                            <th>1</th>
+                            <th>{{#if (eq tiebreak_mode 1)}}<p>Tiebreak</p> {{/if}}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="spielerverein">{{spieler1_verein}}</td>
+                        </tr>
+                        <tr>
+                            <td class="spielerfeld">{{spieler1}} </td>
+                            <td class="spielwerte">{{spieler1_satz}}</td>
+                            <td class="spielwerte">{{spieler1_spiel3}}</td>
+                            <td class="spielwerte">{{spieler1_spiel2}}</td>
+                            <td class="spielwerte">{{spieler1_spiel}}</td>
+                            <td class="spielwertePunkte {{#if (eq winnervalue 1)}}disabled{{/if}}">
+                                {{#if (eq winnervalue 1)}}
+                                    <img src="/Images/trophy.png" alt="Trophy" class="TrophyImage">
+                                {{else}}
+                                    {{spieler1_punkte}}
+                                {{/if}}
+                            </td>
+                            <td class="serveImage"> {{#if (eq serve1 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                        </tr>
+                        <tr>
+                            <td class="spielerverein">{{spieler2_verein}}</td>
+                        </tr>
+                        <tr>
+                            <td class="spielerfeld">{{spieler2}} </td>
+                            <td class="spielwerte">{{spieler2_satz}}</td>
+                            <td class="spielwerte">{{spieler2_spiel3}}</td>
+                            <td class="spielwerte">{{spieler2_spiel2}}</td>
+                            <td class="spielwerte">{{spieler2_spiel}}</td>
+                            <td class="spielwertePunkte {{#if (eq winnervalue 2)}}disabled{{/if}}">
+                                {{#if (eq winnervalue 2)}}
+                                    <img src="/Images/trophy.png" alt="Trophy" class="TrophyImage">
+                                {{else}}
+                                    {{spieler2_punkte}}
+                                {{/if}}
+                            </td>
+                            <td class="serveImage"> {{#if (eq serve2 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="CourtDescription">
+                    <span>Spielklasse: {{spielklasse}}</span>
+                    <span>Altersklasse: {{altersklasse}}</span>
+                </div>
+                <div class="CourtDescription2"> 
+                    <span>Status: {{spielstatus}}</span>
+                    <span>ID: {{id}}</span>
+             
+        </div>
+        {{/each}}
+    </script>
+
+    <script>
+        function playerEditButton(id) {   
+            window.location.href = `http://127.0.0.1:5500/edit3.html?id=${id}`;
+            console.log(id);
+        }
+
+        // Registering the 'eq' helper in Handlebars
+        Handlebars.registerHelper('eq', function(a, b) {
+            return a === b;
+        });
+    </script>
+</body>
+</html>

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/GameOverviewStyles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script defer src="/handlebars/handlebars.js"></script>
+    <script src="/config.js"></script> <!-- Konfigurationsdatei -->
     <script>
         let allMatches = [];
 
@@ -231,8 +232,8 @@
     <script>
 // Global configuration object
 const config = {
-            baseUrl: 'http://127.0.0.1:5500',
-            apiBaseUrl: 'http://localhost:3000'
+            baseUrl: `http://${IP.ipAddress}:5500`,
+            apiBaseUrl: `http://${IP.ipAddress}:3000`
         };
 
 //// Burger Menu///

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neues Spiel anlegen</title>
     <link rel="stylesheet" href="css/CreateGameStyles.css">
+    <script src="/config.js"></script> <!-- Konfigurationsdatei -->
 </head>
 <body>
 <!---Burger Menu-->
@@ -80,9 +81,9 @@
     
     <script>
         // Global configuration object
-const config = {
-            baseUrl: 'http://127.0.0.1:5500',
-            apiBaseUrl: 'http://localhost:3000'
+        const config = {
+            baseUrl: `http://${IP.ipAddress}:5500`,
+            apiBaseUrl: `http://${IP.ipAddress}:3000`
         };
 
 

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,8 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Login</title>
     <link rel="stylesheet" href="css/LoginStyles.css">
+    <script src="/config.js"></script> <!-- Konfigurationsdatei -->
 </head>
 <body>
+  
     <h2>Login</h2>
     <form id="loginForm">
         <label for="username">Email:</label>
@@ -21,12 +25,13 @@
     <button type="button" onclick="UserRegistrationHtmlUrl()" class="UserRegistration">Zur User Registrierung</button>
     <button type="button" onclick="RenewPasswordHtmlUrl()" class="PasswordRenew">Password zurücksetzen</button>
 
-    <script>
-  // Global configuration object
-  const config = {
-            baseUrl: 'http://127.0.0.1:5500',
-            apiBaseUrl: 'http://localhost:3000'
+    <script >
+    const config = {
+            baseUrl: `http://${IP.ipAddress}:5500`,
+            apiBaseUrl: `http://${IP.ipAddress}:3000`
         };
+        
+        
 
 
         // Function to redirect to the registration page

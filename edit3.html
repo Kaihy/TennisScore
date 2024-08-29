@@ -7,7 +7,7 @@
     <!-- Include Handlebars.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-
+    <script src="/config.js"></script> <!-- Konfigurationsdatei -->
 </head>
 <body>
     <!-- Handlebars template -->
@@ -164,8 +164,8 @@
     <script>
 // Global configuration object
 const config = {
-            baseUrl: 'http://127.0.0.1:5500',
-            apiBaseUrl: 'http://localhost:3000'
+            baseUrl: `http://${IP.ipAddress}:5500`,
+            apiBaseUrl: `http://${IP.ipAddress}:3000`
         };
 
         let tiebreak_mode = 1; // Default value, will be overwritten by fetched data

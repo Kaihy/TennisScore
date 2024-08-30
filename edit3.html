@@ -48,26 +48,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr >
+                    <tr>
                         <td id="spieler1" onclick="editName('spieler1')" class="spielerfeld">{{spieler1}}</td>
                         <td id="spieler1_satz" class="spielwerte">{{spieler1_satz}}</td>
                         <td id="spieler1_spiel3" class="spielwerte">{{spieler1_spiel3}}</td>
                         <td id="spieler1_spiel2" class="spielwerte">{{spieler1_spiel2}}</td>
                         <td id="spieler1_spiel" class="spielwerte">{{spieler1_spiel}}</td>
                         <td id="spieler1_punkte" class="spielwertePunkte">{{spieler1_punkte}}</td>
-                        <td id="serve1" onclick="toggleServe('spieler1')"class="serveCell">  
+                        <td id="serve1" onclick="toggleServe('spieler1')" class="serveCell">  
                             {{#if (eq serve1 1)}}<img src="/Images/tennisball.webp" class="serveImage">{{/if}}
                         </td>
                     </tr>
                     <td class="spielerverein">{{spieler1_verein}}</td>
-                    <tr >
+                    <tr>
                         <td id="spieler2" onclick="editName('spieler2')" class="spielerfeld">{{spieler2}}</td>
                         <td id="spieler2_satz" class="spielwerte">{{spieler2_satz}}</td>
                         <td id="spieler2_spiel3" class="spielwerte">{{spieler2_spiel3}}</td>
                         <td id="spieler2_spiel2" class="spielwerte">{{spieler2_spiel2}}</td>
                         <td id="spieler2_spiel" class="spielwerte">{{spieler2_spiel}}</td>
                         <td id="spieler2_punkte" class="spielwertePunkte">{{spieler2_punkte}}</td>
-                        <td id="serve2" onclick="toggleServe('spieler2')"class="serveCell">  
+                        <td id="serve2" onclick="toggleServe('spieler2')" class="serveCell">  
                             {{#if (eq serve2 1)}}<img src="/Images/tennisball.webp" class="serveImage">{{/if}}
                         </td>
                     </tr>
@@ -76,12 +76,10 @@
                 </tbody>
             </table>
 
-           
-
             <!-- Tiebreak Toggle -->
             <div class="tiebreak-toggle">
                 <label for="tiebreak-toggle">Tiebreak Mode:</label>
-                <input type="checkbox" id="tiebreak-toggle" onclick="toggleTiebreak()" >
+                <input type="checkbox" id="tiebreak-toggle" onclick="toggleTiebreak()">
             </div>
 
             <table>
@@ -93,23 +91,23 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><button class="ButtonCountersPoints"  id="ButtonCountersPoints" onclick="updateScore('spieler1', 'punkte')">Points</button></td>
+                        <td><button class="ButtonCountersPoints" id="ButtonCountersPoints" onclick="updateScore('spieler1', 'punkte')">Points</button></td>
                         <td><button class="ButtonCountersPoints" id="ButtonCountersPoints" onclick="updateScore('spieler2', 'punkte')">Points</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonCounters"  id="ButtonCounters" onclick="updateScore('spieler1', 'spiel')">Game 1</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler1', 'spiel')">Game 1</button></td>
                         <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler2', 'spiel')">Game 1 </button></td>
                     </tr>
                     <tr>
                         <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler1', 'spiel2')">Game 2</button></td>
-                        <td><button class="ButtonCounters"  id="ButtonCounters" onclick="updateScore('spieler2', 'spiel2')">Game 2</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler2', 'spiel2')">Game 2</button></td>
                     </tr>
                     <tr>
                         <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler1', 'spiel3')">Game 3</button></td>
                         <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler2', 'spiel3')">Game 3</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonCounters"  id="ButtonCounters" onclick="updateScore('spieler1', 'satz')">Set</button></td>
+                        <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler1', 'satz')">Set</button></td>
                         <td><button class="ButtonCounters" id="ButtonCounters" onclick="updateScore('spieler2', 'satz')">Set</button></td>
                     </tr>
                     <tr>
@@ -117,15 +115,12 @@
                         <td><button class="ButtonReset" id="ButtonReset" onclick="undoScore('spieler2')">Reset Player 2</button></td>
                     </tr>
                     <tr>
-                        <td><button class="ButtonWin" id="ButtonWin"  onclick="updateWin('spieler1')">Player 1 Win</button></td>
-                        <td><button class="ButtonWin" id="ButtonWin" onclick="updateWin('spieler2')">Player 2 Win</button></td>
+                        <td><button id="ButtonWin" onclick="updateWin('spieler1')" class="ButtonWin">Player 1 Win</button></td>
+                        <td><button id="ButtonWin" onclick="updateWin('spieler2')" class="ButtonWin">Player 2 Win</button></td>
                     </tr>
                     <tr>
-                        <td><button  id="ButtonDelete" onclick="undoDelete('{{id}}')" class="ButtonDelete">Spiel löschen</button></td>
-
+                        <td><button id="ButtonDelete" onclick="undoDelete('{{id}}')" class="ButtonDelete">Spiel löschen</button></td>
                     </tr>
-                   
-      
 
                     <div class="center-container"><button type="button" onclick="openViewUrl()" class="Backbtn">Zurück zur Übersicht</button></div>
                 </tbody>
@@ -133,10 +128,7 @@
         </div>
     </div>
     </script>
-    
 
-
-    
 <!-- Winner Modal -->
 <div id="winnerModal" class="modal">
     <div class="modal-content">
@@ -148,258 +140,276 @@
     </div>
 </div>
 
-
-
-
-
-    <!-- Container to display the match -->
-    <div id="matches-container"></div>
+<!-- Container to display the match -->
+<div id="matches-container"></div>
 
 <!--  Generate KEY-->
-<p class="KeyCenterCourt"> Center Court- Key Generator</p>
-    <button id="generateButton">Generate Key</button>
-    <p class="KeyCenterCourtText" id="keyDisplay"></p>
+<p class="KeyCenterCourt">Center Court- Key Generator</p>
+<button id="generateButton">Generate Key</button>
+<p class="KeyCenterCourtText" id="keyDisplay"></p>
 
-
-    <script>
+<script>
 // Global configuration object
 const config = {
-            baseUrl: `http://${IP.ipAddress}:5500`,
-            apiBaseUrl: `http://${IP.ipAddress}:3000`
-        };
+    baseUrl: `http://${IP.ipAddress}:5500`,
+    apiBaseUrl: `http://${IP.ipAddress}:3000`
+};
 
-        let tiebreak_mode = 1; // Default value, will be overwritten by fetched data
-        let generated_key = '';  // Declare globally
+let tiebreak_mode = 1; // Default value, will be overwritten by fetched data
+let generated_key = '';  // Declare globally
 
-        Handlebars.registerHelper('eq', function (a, b) {
-            return a === b;
-        });
+Handlebars.registerHelper('eq', function (a, b) {
+    return a === b;
+});
 
-        // Open Link to Main Page
-        function openViewUrl() {
-            window.location.href = `${config.baseUrl}/GameOverview.html`;
-        }
+// Open Link to Main Page
+function openViewUrl() {
+    window.location.href = `${config.baseUrl}/GameOverview.html`;
+}
 
-        // Fetch ID of URL
-        const currentUrl = window.location.href;
-        let Idextracted;
+// Fetch ID of URL
+const currentUrl = window.location.href;
+let Idextracted;
 
-        const idIndex = currentUrl.indexOf('id=');
+const idIndex = currentUrl.indexOf('id=');
 
-        if (idIndex !== -1) {
-            const idSubstring = currentUrl.substring(idIndex + 3);
-            const nextAmpersandIndex = idSubstring.indexOf('&');
-            Idextracted = nextAmpersandIndex !== -1 ? idSubstring.substring(0, nextAmpersandIndex) : idSubstring;
-            console.log("Extracted ID:", Idextracted);
+if (idIndex !== -1) {
+    const idSubstring = currentUrl.substring(idIndex + 3);
+    const nextAmpersandIndex = idSubstring.indexOf('&');
+    Idextracted = nextAmpersandIndex !== -1 ? idSubstring.substring(0, nextAmpersandIndex) : idSubstring;
+    console.log("Extracted ID:", Idextracted);
 
-            fetchData(Idextracted);
-        } else {
-            console.log("ID parameter not found in the URL");
-        }
+    fetchData(Idextracted);
+} else {
+    console.log("ID parameter not found in the URL");
+}
 
-        // JavaScript to fetch and display match
-        function fetchData(id) {
-            fetch(`${config.apiBaseUrl}/matches/`)
-                .then(response => response.json())
-                .then(data => {
-                    const match = data.find(item => item.id == Idextracted);
+// JavaScript to fetch and display match
+function fetchData(id) {
+    fetch(`${config.apiBaseUrl}/matches/`)
+        .then(response => response.json())
+        .then(data => {
+            const match = data.find(item => item.id == Idextracted);
 
-                    if (match) {
-                        // Update the tiebreak_mode from fetched data
-                        tiebreak_mode = match.tiebreak_mode;
-                        winnervalue = match.winnervalue;
-                
-               
-                        // Compile and display the match data using Handlebars
-                        const source = document.getElementById('matches-template').innerHTML;
-                        const template = Handlebars.compile(source);
-                        const html = template(match);
-                        document.getElementById('matches-container').innerHTML = html;
+            if (match) {
+                // Update the tiebreak_mode from fetched data
+                tiebreak_mode = match.tiebreak_mode;
+                winnervalue = match.winnervalue;
 
-                        // Set the checkbox and tiebreak header based on the fetched tiebreak_mode
-                        if (tiebreak_mode === 1) {
-                            document.getElementById('tiebreak-toggle').checked = true;
-                            document.getElementById('tiebreak-header').innerText = 'Tiebreak';
-                        } else {
-                            document.getElementById('tiebreak-toggle').checked = false;
-                            document.getElementById('tiebreak-header').innerText = '';
-                        }
-                      // Assuming spieler1_punkte is the HTML element where the trophy should be displayed
-                    const spieler1_punkte = document.getElementById('spieler1_punkte');
-                    const spieler2_punkte = document.getElementById('spieler2_punkte');
-                    // Define the path to your trophy image
-                    const trophyIcon = '<img src="/Images/trophy.png" alt="Trophy" style="width: 30%; height: auto;">';
-                    // Set the winnerValue Icon
-                    if (winnervalue === 1) {
-                     // Assuming you want to add a trophy icon, you can use an emoji or an image
-                     spieler1_punkte.innerHTML = trophyIcon;
-                     disableAllButtons()
-                    } else if  (winnervalue === 2){
-                    // Clear the icon if winnervalue is not 1
-                     spieler2_punkte.innerHTML = trophyIcon;
-                     disableAllButtons()
-                    
-                     
-                     
+                // Compile and display the match data using Handlebars
+                const source = document.getElementById('matches-template').innerHTML;
+                const template = Handlebars.compile(source);
+                const html = template(match);
+                document.getElementById('matches-container').innerHTML = html;
+
+                // Set the checkbox and tiebreak header based on the fetched tiebreak_mode
+                if (tiebreak_mode === 1) {
+                    document.getElementById('tiebreak-toggle').checked = true;
+                    document.getElementById('tiebreak-header').innerText = 'Tiebreak';
+                } else {
+                    document.getElementById('tiebreak-toggle').checked = false;
+                    document.getElementById('tiebreak-header').innerText = '';
                 }
 
-                        console.log(match);
-                    } else {
-                        console.error('Match with id not found.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                });
+                // Display trophy if there's a winner
+                const spieler1_punkte = document.getElementById('spieler1_punkte');
+                const spieler2_punkte = document.getElementById('spieler2_punkte');
+                const trophyIcon = '<img src="/Images/trophy.png" alt="Trophy" style="width: 30%; height: auto;">';
+
+                if (winnervalue === 1) {
+                    spieler1_punkte.innerHTML = trophyIcon;
+                    disableAllButtons();
+                } else if (winnervalue === 2) {
+                    spieler2_punkte.innerHTML = trophyIcon;
+                    disableAllButtons();
+                }
+
+                afterTemplateRender();
+                console.log(match);
+            } else {
+                console.error('Match with id not found.');
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+}
+
+// Function to make a cell editable
+function makeEditable(cell) {
+    const currentValue = cell.innerText.trim();
+
+    // Create an input element
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentValue;
+    input.style.width = '100%';
+
+    // Replace the cell content with the input field
+    cell.innerText = '';
+    cell.appendChild(input);
+    input.focus();
+
+    // Save the value when the user clicks outside the input (blur) or presses Enter
+    input.addEventListener('blur', () => {
+        saveEditableValue(cell, input.value);
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            input.blur();
         }
+    });
+}
 
+// Function to save the edited value and update the database
+function saveEditableValue(cell, newValue) {
+    // Update the cell's text with the new value
+    cell.innerText = newValue;
 
-        
-//////Delete Flag
-// Function to undo the delete flag
+    // Update the database with the new value
+    updateDatabase();
+}
+
+// Initialize event listeners on the desired cells
+function initializeEditableCells() {
+    const cells = document.querySelectorAll('.spielwerte');
+    cells.forEach(cell => {
+        cell.addEventListener('click', () => makeEditable(cell));
+    });
+}
+
+// Call this function after the template is rendered to set up the event listeners
+function afterTemplateRender() {
+    initializeEditableCells();
+}
+
+// Delete Flag
 let deleteflag = 0;
 async function undoDelete(id) {
-    let userChoice = confirm("Willst du das Spiel wirklich löschen ? ");
+    let userChoice = confirm("Willst du das Spiel wirklich löschen?");
     if (userChoice) {
         alert("Das Spiel wurde erfolgreich gelöscht!");
-        // Set deleteflag to 1 before updating the database
         deleteflag = "1";
         updateDatabase();
-        openViewUrl();       
+        openViewUrl();
     } else {
         return;
-    }   
-        }; 
-////////// TiebreakModus///////////
+    }
+}
 
 function toggleTiebreak() {
-            if (tiebreak_mode === 0) {
-                tiebreak_mode = 1;
-                document.getElementById('spieler1_punkte').innerText = '0';
-                document.getElementById('spieler2_punkte').innerText = '0';
-                document.getElementById('tiebreak-header').innerText = 'Tiebreak';
-            } else {
-                tiebreak_mode = 0;
-                document.getElementById('spieler1_punkte').innerText = '0';
-                document.getElementById('spieler2_punkte').innerText = '0';
-                document.getElementById('tiebreak-header').innerText = '';
-            }
-            // Update the database with the new tiebreak_mode
-            updateDatabase();
-        }
-////////// TiebreakModus-ENDE///////////
+    if (tiebreak_mode === 0) {
+        tiebreak_mode = 1;
+        document.getElementById('spieler1_punkte').innerText = '0';
+        document.getElementById('spieler2_punkte').innerText = '0';
+        document.getElementById('tiebreak-header').innerText = 'Tiebreak';
+    } else {
+        tiebreak_mode = 0;
+        document.getElementById('spieler1_punkte').innerText = '0';
+        document.getElementById('spieler2_punkte').innerText = '0';
+        document.getElementById('tiebreak-header').innerText = '';
+    }
+    updateDatabase();
+}
 
-    // Update Score logic
-    function updateScore(player, type) {
-        const scoreElement = document.getElementById(`${player}_${type}`);
-        let currentScore = scoreElement.innerText;
-        ChangeSpielstatusText();
+function updateScore(player, type) {
+    const scoreElement = document.getElementById(`${player}_${type}`);
+    let currentScore = scoreElement.innerText;
+    ChangeSpielstatusText();
 
-        if (type === 'punkte') {
-            if (tiebreak_mode === 1) {
-                    // Tiebreak mode: simple increment
-                    scoreElement.innerText = parseInt(currentScore) + 1;
+    if (type === 'punkte') {
+        if (tiebreak_mode === 1) {
+            scoreElement.innerText = parseInt(currentScore) + 1;
+        } else {
+            if (currentScore === '0') {
+                scoreElement.innerText = '15';
+            } else if (currentScore === '15') {
+                scoreElement.innerText = '30';
+            } else if (currentScore === '30') {
+                scoreElement.innerText = '40';
+            } else if (currentScore === '40') {
+                const opponent = (player === 'spieler1') ? 'spieler2' : 'spieler1';
+                const opponentScore = document.getElementById(`${opponent}_punkte`).innerText;
+
+                if (opponentScore === '40') {
+                    scoreElement.innerText = 'Adv';
+                } else if (opponentScore === 'Adv') {
+                    document.getElementById(`${opponent}_punkte`).innerText = '40';
+                    scoreElement.innerText = '40';
                 } else {
-                    // Traditional tennis scoring
-                    if (currentScore === '0') {
-                        scoreElement.innerText = '15';
-                    } else if (currentScore === '15') {
-                        scoreElement.innerText = '30';
-                    } else if (currentScore === '30') {
-                        scoreElement.innerText = '40';
-                    } else if (currentScore === '40') {
-                        const opponent = (player === 'spieler1') ? 'spieler2' : 'spieler1';
-                        const opponentScore = document.getElementById(`${opponent}_punkte`).innerText;
-
-                        if (opponentScore === '40') {
-                            scoreElement.innerText = 'Adv';
-                        } else if (opponentScore === 'Adv') {
-                            document.getElementById(`${opponent}_punkte`).innerText = '40';
-                            scoreElement.innerText = '40';
-                        } else {
-                            scoreElement.innerText = '0';
-                            document.getElementById(`spieler1_punkte`).innerText = '0';
-                            document.getElementById(`spieler2_punkte`).innerText = '0';
-                        }
-                    } else if (currentScore === 'Adv') {
-                        document.getElementById(`spieler1_punkte`).innerText = '0';
-                        document.getElementById(`spieler2_punkte`).innerText = '0';
-                    }
+                    scoreElement.innerText = '0';
+                    document.getElementById(`spieler1_punkte`).innerText = '0';
+                    document.getElementById(`spieler2_punkte`).innerText = '0';
                 }
-            } else if (type === 'spiel') {
-                let currentScore = parseInt(scoreElement.innerText);
-                if (currentScore < 7) {
-                    scoreElement.innerText = parseInt(currentScore) + 1;
-                    toggleServe(player);
-                }
-            } else if (type === 'spiel2') {
-                let currentScore = parseInt(scoreElement.innerText);
-                if (currentScore < 7) {
-                    scoreElement.innerText = parseInt(currentScore) + 1;
-                    toggleServe(player);
-                }
-            } else if (type === 'spiel3') {
-                let currentScore = parseInt(scoreElement.innerText);
-                if (currentScore < 7) {
-                    scoreElement.innerText = parseInt(currentScore) + 1;
-                    toggleServe(player);
-                }
-            } else if (type === 'satz') {
-                let currentScore = parseInt(scoreElement.innerText);
-                if (currentScore < 3) {
-                    scoreElement.innerText = parseInt(currentScore) + 1;
-                }
+            } else if (currentScore === 'Adv') {
+                document.getElementById(`spieler1_punkte`).innerText = '0';
+                document.getElementById(`spieler2_punkte`).innerText = '0';
             }
-
-            // Update the database after score change
-            updateDatabase();
         }
-
-        function ChangeSpielstatusText() {
-            var selectedValue = document.getElementById('statusDropdown').value;
-            document.getElementById('statusText').innerText = "Im Gange";
+    } else if (type === 'spiel') {
+        let currentScore = parseInt(scoreElement.innerText);
+        if (currentScore < 7) {
+            scoreElement.innerText = parseInt(currentScore) + 1;
+            toggleServe(player);
         }
+    } else if (type === 'spiel2') {
+        let currentScore = parseInt(scoreElement.innerText);
+        if (currentScore < 7) {
+            scoreElement.innerText = parseInt(currentScore) + 1;
+            toggleServe(player);
+        }
+    } else if (type === 'spiel3') {
+        let currentScore = parseInt(scoreElement.innerText);
+        if (currentScore < 7) {
+            scoreElement.innerText = parseInt(currentScore) + 1;
+            toggleServe(player);
+        }
+    } else if (type === 'satz') {
+        let currentScore = parseInt(scoreElement.innerText);
+        if (currentScore < 3) {
+            scoreElement.innerText = parseInt(currentScore) + 1;
+        }
+    }
+    updateDatabase();
+}
 
+function ChangeSpielstatusText() {
+    document.getElementById('statusText').innerText = "Im Gange";
+}
 
-
-
-    // Function to Reset Player 1 or 2
-        function undoScore(player) {
-        let userChoice = confirm(`Willst du alle Punkte von ${player} löschen?`);
-        if (userChoice) {
-            const types = ['satz', 'spiel3', 'spiel2', 'spiel', 'punkte'];
-            types.forEach(type => {
-                const scoreElement = document.getElementById(`${player}_${type}`);
-                scoreElement.innerText = '0';
-                winnervalue = '0'; 
-
-            });
-            // Update the database after undo
-            updateDatabase();
-         } else {
+function undoScore(player) {
+    let userChoice = confirm(`Willst du alle Punkte von ${player} löschen?`);
+    if (userChoice) {
+        const types = ['satz', 'spiel3', 'spiel2', 'spiel', 'punkte'];
+        types.forEach(type => {
+            const scoreElement = document.getElementById(`${player}_${type}`);
+            scoreElement.innerText = '0';
+            winnervalue = '0';
+        });
+        updateDatabase();
+    } else {
         return;
-    }   
-        }; 
-/////////////
-let winnervalue;  // Declare globally
+    }
+}
+
+let winnervalue;
 
 function updateWin(player) {
-    // Get the winner's name
     const winnerNameElement = document.getElementById(player);
     if (winnerNameElement) {
         const winnerName = winnerNameElement.innerText;
 
         if (player === 'spieler1') {
-            winnervalue = '01'; // Player 1 wins
+            winnervalue = '01';
             document.getElementById(`spieler2_punkte`).innerText = '0';
             document.getElementById('statusText').innerText = "Beendet";
         } else if (player === 'spieler2') {
-            winnervalue = '02'; // Player 2 wins
+            winnervalue = '02';
             document.getElementById(`spieler1_punkte`).innerText = '0';
             document.getElementById('statusText').innerText = "Beendet";
         }
-    
-        // Display the winner's name and the decision buttons in the modal
+
         const winnerNameModal = document.getElementById('winnerName');
         if (winnerNameModal) {
             winnerNameModal.innerHTML = `
@@ -411,57 +421,41 @@ function updateWin(player) {
                     </div>
                 </div>
             `;
-        } else {
-            console.warn("Element with ID 'winnerName' not found.");
         }
 
-        // Show the modal
         const modal = document.getElementById('winnerModal');
         if (modal) {
             modal.style.display = "block";
 
-            // Add event listener for the "Proceed" button
             const proceedButton = document.getElementById('proceedButton');
             if (proceedButton) {
                 proceedButton.onclick = function() {
-                    // Trigger the confetti animation with larger particles
                     confetti({
-                        particleCount: 600, // Increase the number of particles
-                        spread: 200, // Increase the spread for a wider dispersion
-                        startVelocity: 80, // Optional: Adjust to control the speed of particles
-                        origin: { x: 0.9, y: 0.3 }, // Adjust origin to the right side and higher on the screen
-                        scalar: 2 // Larger confetti particles
+                        particleCount: 600,
+                        spread: 200,
+                        startVelocity: 80,
+                        origin: { x: 0.9, y: 0.3 },
+                        scalar: 2
                     });
 
-                    console.log(`${winnerName} has won the match!`);
-                    console.log(winnervalue);
-
-                    // Update the database with the winner value
                     updateDatabase();
 
- // Show the loading bar
- const loadingBarContainer = document.getElementById('loadingBarContainer');
-        const loadingBar = document.getElementById('loadingBar');
-        loadingBarContainer.style.display = 'block';
+                    const loadingBarContainer = document.getElementById('loadingBarContainer');
+                    const loadingBar = document.getElementById('loadingBar');
+                    loadingBarContainer.style.display = 'block';
 
-        // Animate the loading bar over 4 seconds
-        let width = 0;
-        const interval = setInterval(() => {
-            width += 1;
-            loadingBar.style.width = width + '%';
-            if (width >= 100) {
-                clearInterval(interval);
-                // Redirect to the desired URL after the loading bar reaches 100%
-                window.location.href = `${config.baseUrl}/GameOverview.html`; // Change to your desired URL
-            }
-        }, 40); // 40ms intervals for 4 seconds total (100 steps)
-
-
-
+                    let width = 0;
+                    const interval = setInterval(() => {
+                        width += 1;
+                        loadingBar.style.width = width + '%';
+                        if (width >= 100) {
+                            clearInterval(interval);
+                            window.location.href = `${config.baseUrl}/GameOverview.html`;
+                        }
+                    }, 40);
                 };
             }
 
-            // Close the modal when the user clicks on <span> (x)
             const span = document.getElementById('closeModal');
             if (span) {
                 span.onclick = function() {
@@ -469,224 +463,200 @@ function updateWin(player) {
                 };
             }
 
-            // Close the modal when the user clicks anywhere outside of the modal
             window.onclick = function(event) {
                 if (event.target == modal) {
                     modal.style.display = "none";
                 }
             };
-        } else {
-            console.warn("Element with ID 'winnerModal' not found.");
         }
-    } else {
-        console.warn(`Element with ID ${player} not found.`);
     }
 }
 
+function generateKey() {
+    const now = new Date();
+    const year = now.getFullYear().toString().slice(-2);  // Last two digits of the year
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');  // Months are zero-indexed, so add 1
+    const day = now.getDate().toString().padStart(2, '0');
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const seconds = now.getSeconds().toString().padStart(2, '0');
 
-// Function to generate a new key
-    function generateKey() {
-        const now = new Date();
-        const year = now.getFullYear().toString().slice(-2);  // Last two digits of the year
-        const month = (now.getMonth() + 1).toString().padStart(2, '0');  // Months are zero-indexed, so add 1
-        const day = now.getDate().toString().padStart(2, '0');
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const seconds = now.getSeconds().toString().padStart(2, '0');
+    // Generate a key based on time components and ensure it's always 7 digits long
+    generated_key = year + month + day + hours + minutes + seconds;
+    generated_key = generated_key.slice(-7);  // Slice the last 7 digits
 
-        // Generate a 7-digit key based on time components
-        generated_key = year + month + day + hours + minutes + seconds;
-        generated_key = generated_key.slice(-7);  // Slice the last 7 digits
-    }
+    // Ensure the key is always 7 digits, padding with leading zeros if necessary
+    generated_key = generated_key.padStart(7, '0');
 
-   // Function to update the generated key in the database
- 
+    // Convert to string explicitly
+    generated_key = String(generated_key);
+}
+
 async function updateGeneratedKey() {
     if (!Idextracted) {
         console.error('No ID extracted from URL.');
         return;
     }
 
-
-
-        fetch(`${config.apiBaseUrl}/generatedkey/${Idextracted}`, {
-            method: 'PATCH',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                generated_key: generated_key
-            })
-        }).then(response => response.json()).then(() => {
-            console.log('Generated key updated successfully in the database');
-        }).catch(error => {
-            console.error('Error updating generated key:', error);
-        });
-    }
-
-    document.getElementById('generateButton').addEventListener('click', () => {
-        let userChoice = confirm("Willst du einen neuen Key kreieren?" + "Alle aktuellen Center Court Verbindungen gehen dabei verloren?");
-        if (userChoice) {
-
-        generateKey();
-        document.getElementById('keyDisplay').textContent = 'Key Generated!';
-        console.log(generated_key + " Stored in DB");
-        updateGeneratedKey();  // Call the new route to update only the generated key
-        document.getElementById('keyDisplay').textContent = `The key is: ${generated_key}`;
-        return;
-    }  
+    fetch(`${config.apiBaseUrl}/generatedkey/${Idextracted}`, {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            generated_key: String(generated_key) // Ensure the key is a string
+        })
+    }).then(response => response.json()).then(() => {
+        console.log('Generated key updated successfully in the database');
+    }).catch(error => {
+        console.error('Error updating generated key:', error);
     });
-
-
-/////////////
-
-
-
-        // Function to show the dropdown and hide the edit button
-        function enableStatusEdit() {
-            document.getElementById('statusText').style.display = 'none';
-            document.getElementById('statusDropdown').style.display = 'inline-block';
-            document.getElementById('editButton').style.display = 'none'; // Hide Edit button
-            document.getElementById('saveButton').style.display = 'inline-block'; // Show Save button
-        }
-
-        // Function to save the edited status and revert to edit mode
-        function saveStatusEdit() {
-            var selectedValue = document.getElementById('statusDropdown').value;
-            document.getElementById('statusText').innerText = selectedValue;
-            document.getElementById('statusText').style.display = 'inline-block';
-            document.getElementById('statusDropdown').style.display = 'none';
-            document.getElementById('editButton').style.display = 'inline-block'; // Show Edit button
-            document.getElementById('saveButton').style.display = 'none'; // Hide Save button
-
-            // Update the database after status change
-            updateDatabase();
-        }
-
-        // Function to edit player name
-        function editName(player) {
-            const nameSpan = document.getElementById(player);
-            const currentName = nameSpan.innerText;
-
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = currentName;
-            input.maxLength = 9;
-
-            nameSpan.innerText = '';
-            nameSpan.appendChild(input);
-            input.focus();
-
-            input.addEventListener('blur', () => {
-                const newName = input.value;
-                nameSpan.removeChild(input);
-                nameSpan.innerText = newName;
-
-                updateDatabase();
-            });
-
-            input.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    input.blur();
-                }
-            });
-        }
-
-        // Function to toggle serve
-        function toggleServe(player) {
-            const serve1Element = document.getElementById('serve1');
-            const serve2Element = document.getElementById('serve2');
-
-            if (player === 'spieler1') {
-                if (serve1Element.innerHTML.trim()) {
-                    serve1Element.innerHTML = '';
-                    serve2Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
-                } else {
-                    serve1Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
-                    serve2Element.innerHTML = '';
-                }
-            } else if (player === 'spieler2') {
-                if (serve2Element.innerHTML.trim()) {
-                    serve2Element.innerHTML = '';
-                    serve1Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
-                } else {
-                    serve2Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
-                    serve1Element.innerHTML = '';
-                }
-            }
-            updateDatabase();
-        }
-
-        function disableAllButtons() {
-            const buttons = document.querySelectorAll('#editButton, .ButtonCountersPoints, .ButtonCounters,.ButtonWin, button[data-disable="true"]');
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-            buttons.forEach(button => {
-        button.disabled = true; // Disable the button
-        button.classList.add('disabled-button'); // Add the CSS class to grey it out
-    });
-    // Disable the selected checkboxes
-    checkboxes.forEach(checkbox => {
-        checkbox.disabled = true; // Disable the checkbox
-        checkbox.classList.add('disabled-button'); // Add the CSS class to grey it out
-    });
-
-
 }
 
-        // Function to update the database
-        async function updateDatabase() {
-            const spieler1 = document.getElementById('spieler1').innerText;
-            const spieler2 = document.getElementById('spieler2').innerText;
-            const spieler1_Satz = document.getElementById('spieler1_satz').innerText;
-            const spieler2_Satz = document.getElementById('spieler2_satz').innerText;
-            const spieler1_Spiel = document.getElementById('spieler1_spiel').innerText;
-            const spieler1_Spiel2 = document.getElementById('spieler1_spiel2').innerText;
-            const spieler1_Spiel3 = document.getElementById('spieler1_spiel3').innerText;
-            const spieler2_Spiel = document.getElementById('spieler2_spiel').innerText;
-            const spieler2_Spiel2 = document.getElementById('spieler2_spiel2').innerText;
-            const spieler2_Spiel3 = document.getElementById('spieler2_spiel3').innerText;
-            const spieler1_Punkte = document.getElementById('spieler1_punkte').innerText;
-            const spieler2_Punkte = document.getElementById('spieler2_punkte').innerText;
-            const spielstatus = document.getElementById('statusText').innerText;
-            const serve1 = document.getElementById('serve1').innerHTML.trim() ? 1 : 0;
-            const serve2 = document.getElementById('serve2').innerHTML.trim() ? 1 : 0;
+document.getElementById('generateButton').addEventListener('click', () => {
+    let userChoice = confirm("Willst du einen neuen Key kreieren? Alle aktuellen Center Court Verbindungen gehen dabei verloren?");
+    if (userChoice) {
+        generateKey();
+        document.getElementById('keyDisplay').textContent = 'Key Generated!';
+        updateGeneratedKey();
+        document.getElementById('keyDisplay').textContent = `The key is: ${generated_key}`;
+    }
+});
 
-            fetch(`${config.apiBaseUrl}/update/${Idextracted}`, {
-                method: 'PATCH',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    spieler1: spieler1,
-                    spieler2: spieler2,
-                    spieler1_Satz: spieler1_Satz,
-                    spieler2_Satz: spieler2_Satz,
-                    spieler1_Spiel: spieler1_Spiel,
-                    spieler1_Spiel2: spieler1_Spiel2,
-                    spieler1_Spiel3: spieler1_Spiel3,
-                    spieler2_Spiel: spieler2_Spiel,
-                    spieler2_Spiel2: spieler2_Spiel2,
-                    spieler2_Spiel3: spieler2_Spiel3,
-                    spieler1_Punkte: spieler1_Punkte,
-                    spieler2_Punkte: spieler2_Punkte,
-                    spielstatus: spielstatus,
-                    serve1: serve1,
-                    serve2: serve2,
-                    deleteflag: deleteflag,
-                    tiebreak_mode: tiebreak_mode,
-                    winnervalue: winnervalue
-                })
-            }).then(response => response.json()).then(() => {
-                console.log('Database updated successfully');
-            }).catch(error => {
-                console.error('Error updating database:', error);
-            });
+function enableStatusEdit() {
+    document.getElementById('statusText').style.display = 'none';
+    document.getElementById('statusDropdown').style.display = 'inline-block';
+    document.getElementById('editButton').style.display = 'none';
+    document.getElementById('saveButton').style.display = 'inline-block';
+}
+
+function saveStatusEdit() {
+    var selectedValue = document.getElementById('statusDropdown').value;
+    document.getElementById('statusText').innerText = selectedValue;
+    document.getElementById('statusText').style.display = 'inline-block';
+    document.getElementById('statusDropdown').style.display = 'none';
+    document.getElementById('editButton').style.display = 'inline-block';
+    document.getElementById('saveButton').style.display = 'none';
+
+    updateDatabase();
+}
+
+function editName(player) {
+    const nameSpan = document.getElementById(player);
+    const currentName = nameSpan.innerText;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = currentName;
+    input.maxLength = 9;
+
+    nameSpan.innerText = '';
+    nameSpan.appendChild(input);
+    input.focus();
+
+    input.addEventListener('blur', () => {
+        const newName = input.value;
+        nameSpan.removeChild(input);
+        nameSpan.innerText = newName;
+
+        updateDatabase();
+    });
+
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            input.blur();
         }
+    });
+}
 
-   
-        
-    </script>
+function toggleServe(player) {
+    const serve1Element = document.getElementById('serve1');
+    const serve2Element = document.getElementById('serve2');
+
+    if (player === 'spieler1') {
+        if (serve1Element.innerHTML.trim()) {
+            serve1Element.innerHTML = '';
+            serve2Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+        } else {
+            serve1Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+            serve2Element.innerHTML = '';
+        }
+    } else if (player === 'spieler2') {
+        if (serve2Element.innerHTML.trim()) {
+            serve2Element.innerHTML = '';
+            serve1Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+        } else {
+            serve2Element.innerHTML = '<img src="/Images/tennisball.webp" class="serveImage">';
+            serve1Element.innerHTML = '';
+        }
+    }
+    updateDatabase();
+}
+
+function disableAllButtons() {
+    const buttons = document.querySelectorAll('#editButton, .ButtonCountersPoints, .ButtonCounters, .ButtonWin, button[data-disable="true"]');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    buttons.forEach(button => {
+        button.disabled = true;
+        button.classList.add('disabled-button');
+    });
+    checkboxes.forEach(checkbox => {
+        checkbox.disabled = true;
+        checkbox.classList.add('disabled-button');
+    });
+}
+
+async function updateDatabase() {
+    const spieler1 = document.getElementById('spieler1').innerText;
+    const spieler2 = document.getElementById('spieler2').innerText;
+    const spieler1_Satz = document.getElementById('spieler1_satz').innerText;
+    const spieler2_Satz = document.getElementById('spieler2_satz').innerText;
+    const spieler1_Spiel = document.getElementById('spieler1_spiel').innerText;
+    const spieler1_Spiel2 = document.getElementById('spieler1_spiel2').innerText;
+    const spieler1_Spiel3 = document.getElementById('spieler1_spiel3').innerText;
+    const spieler2_Spiel = document.getElementById('spieler2_spiel').innerText;
+    const spieler2_Spiel2 = document.getElementById('spieler2_spiel2').innerText;
+    const spieler2_Spiel3 = document.getElementById('spieler2_spiel3').innerText;
+    const spieler1_Punkte = document.getElementById('spieler1_punkte').innerText;
+    const spieler2_Punkte = document.getElementById('spieler2_punkte').innerText;
+    const spielstatus = document.getElementById('statusText').innerText;
+    const serve1 = document.getElementById('serve1').innerHTML.trim() ? 1 : 0;
+    const serve2 = document.getElementById('serve2').innerHTML.trim() ? 1 : 0;
+
+    fetch(`${config.apiBaseUrl}/update/${Idextracted}`, {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            spieler1: spieler1,
+            spieler2: spieler2,
+            spieler1_Satz: spieler1_Satz,
+            spieler2_Satz: spieler2_Satz,
+            spieler1_Spiel: spieler1_Spiel,
+            spieler1_Spiel2: spieler1_Spiel2,
+            spieler1_Spiel3: spieler1_Spiel3,
+            spieler2_Spiel: spieler2_Spiel,
+            spieler2_Spiel2: spieler2_Spiel2,
+            spieler2_Spiel3: spieler2_Spiel3,
+            spieler1_Punkte: spieler1_Punkte,
+            spieler2_Punkte: spieler2_Punkte,
+            spielstatus: spielstatus,
+            serve1: serve1,
+            serve2: serve2,
+            deleteflag: deleteflag,
+            tiebreak_mode: tiebreak_mode,
+            winnervalue: winnervalue
+        })
+    }).then(response => response.json()).then(() => {
+        console.log('Database updated successfully');
+    }).catch(error => {
+        console.error('Error updating database:', error);
+    });
+}
+
+</script>
 </body>
 </html>

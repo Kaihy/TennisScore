@@ -4,18 +4,14 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const validator = require('validator'); // Add validator for email validation
+const { dbConfig } = require('./config'); // Import the config
 
 const app = express();
 const port = 3000;
 
-// Configure the PostgreSQL connection
-const pool = new Pool({
-    user: 'postgres',       // Replace with your PostgreSQL username
-    host: 'localhost',      // Replace with your PostgreSQL host
-    database: 'Tennis_App', // Replace with your PostgreSQL database name
-    password: '12345',      // Replace with your PostgreSQL password
-    port: 5432,             // Default PostgreSQL port
-});
+
+// Configure the PostgreSQL connection using the imported config
+const pool = new Pool(dbConfig);
 
 // Middleware
 app.use(cors());

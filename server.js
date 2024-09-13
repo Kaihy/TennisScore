@@ -5,6 +5,7 @@ const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const validator = require('validator'); // Add validator for email validation
 const { dbConfig } = require('./config'); // Import the config
+const config = require('./config'); // Require the config.js file
 
 const app = express();
 const port = 3000;
@@ -109,12 +110,6 @@ app.post('/renew-password', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
-
-
-
-
-
 
 
 
@@ -237,5 +232,5 @@ app.patch('/generatedkey/:id', async (req, res) => {
 
 
 app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`Server is running on http://${config.IP.ipAddress}:${port}`);
 });

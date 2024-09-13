@@ -1,3 +1,4 @@
-node_modules
-backup
+/node_modules
+/backup
+.config.js
 config.js

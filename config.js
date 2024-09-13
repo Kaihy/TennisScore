@@ -1,9 +1,12 @@
 // config.js
 var IP = {
-    ipAddress: "192.168.178.131" // Beispiel-IP-Adresse
+    ipAddress: "172.20.10.2" // Beispiel-IP-Adresse
 };
 
+
+
 module.exports = {
+    IP: IP, // Export the IP object
     dbConfig: {
       user: 'postgres',       // Replace with your PostgreSQL username
       host: 'localhost',      // Replace with your PostgreSQL host

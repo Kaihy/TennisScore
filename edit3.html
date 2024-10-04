@@ -143,10 +143,20 @@
 <!-- Container to display the match -->
 <div id="matches-container"></div>
 
+<!-- Info text to be shown on clicking the icon -->
+<div class="info-icon-container">
+    <span class="info-icon" onclick="toggleInfo()">ℹ</span>
+    <div class="info-text" id="infoText"></div>
+</div>
+
 <!--  Generate KEY-->
-<p class="KeyCenterCourt">Center Court- Key Generator</p>
+<p class="KeyCenterCourt">
+    Center Court- Key Generator</p>
+
 <button id="generateButton">Generate Key</button>
 <p class="KeyCenterCourtText" id="keyDisplay"></p>
+
+
 
 <script>
 // Global configuration object
@@ -243,7 +253,10 @@ function makeEditable(cell) {
     const input = document.createElement('input');
     input.type = 'text';
     input.value = currentValue;
-    input.style.width = '100%';
+    input.style.width = '50px';  // Increase the width
+    input.style.height = '40px';  // Increase the height
+    input.style.fontSize = '60px'; // Increase the font size
+    input.style.padding = '1px';  // Add padding for better appearance
 
     // Replace the cell content with the input field
     cell.innerText = '';
@@ -606,6 +619,25 @@ function disableAllButtons() {
         checkbox.classList.add('disabled-button');
     });
 }
+/// Info Icon///
+function toggleInfo() {
+        const infoText = document.getElementById('infoText');
+        if (infoText.style.display === 'none') {
+            infoText.style.display = 'block';
+        } else {
+            infoText.style.display = 'none';
+        }
+    }
+// Function to set dynamic info text
+function setInfoText() {
+    const infoTextElement = document.getElementById('infoText');
+    infoTextElement.innerHTML = `Gebe den generierten Code in der URL ein:<br><a href="${config.baseUrl}/centercourt.html" target="_blank">${config.baseUrl}/centercourt.html</a>`;
+}
+
+// Call the function when the page loads or when required
+setInfoText();
+
+/// Info Icon Ende///
 
 async function updateDatabase() {
     const spieler1 = document.getElementById('spieler1').innerText;

@@ -24,9 +24,19 @@
 
         function updateMatches() {
     const filters = getFilters();
+    const userId = localStorage.getItem('userId');
+    console.log('Logged in user ID:', userId);
+
+    // If userId is a string, ensure it's converted to a number for comparison, assuming match.user_id is a number.
+    const numericUserId = parseInt(userId, 10);
+    
     const filteredData = allMatches.filter(match => {
         // Filter matches where "deleteflag" is either 1 or 0
         if (match.deleteflag !== 1) {
+            return false;
+        }
+        // Check if the user_id matches the logged-in user's ID
+if (match.user_id !== numericUserId) {
             return false;
         }
         

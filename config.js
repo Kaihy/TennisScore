@@ -1,6 +1,6 @@
 // config.js
 var IP = {
-    ipAddress: "172.20.10.2" // Beispiel-IP-Adresse
+    ipAddress: "192.168.178.131" // Beispiel-IP-Adresse
 };
 
 

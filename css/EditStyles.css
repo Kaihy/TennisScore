@@ -213,6 +213,12 @@ th, td {
 .Subinfos > span, .Subinfos > select, .Subinfos > button {
     margin: 2px 0;
 }
+#tiebreak-header {
+    font-size: 44px; /* Adjust this value as needed */
+    font-weight: bold; /* Optional: to make it bold */
+    color: #e40303; /* Optional: to set the text color */
+    margin-top: 10px; /* Optional: adjust the spacing */
+}
 
 .tiebreak-toggle {
     margin: 15px 0;
@@ -365,4 +371,51 @@ th, td {
     padding: 2px;
     font-size: 2.5em;
     text-align: center;
+}
+
+
+/* Info Icon */
+
+
+
+.info-icon-container {
+    position: relative;
+    display: inline-block;
+}
+
+.info-icon {
+    font-size: 88px; /* Adjust size */
+    cursor: pointer;
+    color: #007bff; /* Blue color */
+    margin-left: 900px; /* Space before icon */
+}
+
+.info-icon:hover {
+    color: #0056b3; /* Darker color on hover */
+}
+
+.info-text {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+    margin-left: 30px;
+    z-index: 1;
+    width: 900px; /* Adjust width */
+    height: auto;
+    font-size: 2.5em;
+}
+
+.info-text::before {
+    content: "";
+    position: absolute;
+    top: -10px; /* Adjust to align with icon */
+    left: 10px; /* Adjust triangle position */
+    border-width: 100%;
+    border-style: solid;
+    border-color: transparent transparent #f9f9f9 transparent; /* Triangle pointing up */
 }

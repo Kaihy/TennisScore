@@ -5,6 +5,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "pg": "^8.12.0",
+    "uuid": "^10.0.0",
     "validator": "^13.12.0"
   },
   "name": "coding_tenniswiki",

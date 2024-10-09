@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script src="/config.js"></script> <!-- Konfigurationsdatei -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 </head>
 <body>
     <!-- Handlebars template -->
@@ -153,10 +154,20 @@
 <p class="KeyCenterCourt">
     Center Court- Key Generator</p>
 
-<button id="generateButton">Generate Key</button>
+<button id="generateButton" class="generateButton">Generate Key</button>
 <p class="KeyCenterCourtText" id="keyDisplay"></p>
+<p id="qr-reader-results" class="qr-reader-results"></p>
 
+<!-- Camera Modal Popup for QR Code Scanning -->
+<div id="cameraModal" class="modal">
+    <div class="modal-content">
+        <span id="closeCameraModal" class="close">&times;</span>
+        <div id="qr-reader" class="qr-reader"></div>
+    </div>
+</div>
 
+<!-- Start Scanner Button -->
+<button onclick="openCameraModal()" class="generateButton">Start QR Code Scanner</button>
 
 <script>
 // Global configuration object
@@ -194,6 +205,9 @@ if (idIndex !== -1) {
     console.log("ID parameter not found in the URL");
 }
 
+// Global variables to store user_id and courtnumber after fetching data
+let user_id, courtnumber;
+
 // JavaScript to fetch and display match
 function fetchData(id) {
     fetch(`${config.apiBaseUrl}/matches/`)
@@ -205,6 +219,10 @@ function fetchData(id) {
                 // Update the tiebreak_mode from fetched data
                 tiebreak_mode = match.tiebreak_mode;
                 winnervalue = match.winnervalue;
+
+                 // Store user_id and courtnumber for later use
+                 user_id = match.user_id;
+                courtnumber = match.courtnumber;
 
                 // Compile and display the match data using Handlebars
                 const source = document.getElementById('matches-template').innerHTML;
@@ -484,7 +502,7 @@ function updateWin(player) {
         }
     }
 }
-
+/// Funktion Manuel Generate Key Enter////
 function generateKey() {
     const now = new Date();
     const year = now.getFullYear().toString().slice(-2);  // Last two digits of the year
@@ -536,6 +554,149 @@ document.getElementById('generateButton').addEventListener('click', () => {
         document.getElementById('keyDisplay').textContent = `The key is: ${generated_key}`;
     }
 });
+
+/// Funktion Manuel Generate Key Enter- ENDE////
+
+
+
+//////////////////
+
+
+// Function to get user_id and courtnumber dynamically
+function getUserIdAndCourtNumber() {
+    const userIdElement = document.getElementById('user_id');
+    const courtNumberElement = document.getElementById('courtnumber');
+
+    // Check if the elements exist and retrieve their values
+    if (userIdElement && courtNumberElement) {
+        const user_id = userIdElement.value;
+        const courtnumber = courtNumberElement.value;
+
+        // Log the retrieved values
+        console.log(`Retrieved user_id: ${user_id}, courtnumber: ${courtnumber}`);
+        return { user_id, courtnumber };
+    } else {
+        console.error("User ID or Court Number element not found.");
+        return { user_id: 'default_user_id', courtnumber: 'default_courtnumber' };
+    }
+}
+
+// Call this function after the DOM has fully loaded to ensure elements are available
+window.onload = function() {
+    getUserIdAndCourtNumber(); // Test if values are logged on page load
+};
+
+
+let qrReader;  // Declare globally so it can be accessed in multiple functions
+let modalTimeout;  // Variable to store the timeout for automatic closure
+
+// Open the camera modal and start the QR scanner
+function openCameraModal() {
+    const cameraModal = document.getElementById('cameraModal');
+    cameraModal.style.display = 'block';
+
+    // Initialize the QR code scanner
+    qrReader = new Html5Qrcode("qr-reader");
+    qrReader.start(
+        { facingMode: "environment" },
+        { 
+        fps: 10, 
+        qrbox: null, // Use percentages to adapt to full-screen modal
+        aspectRatio: 1.0 // Optional: Keep a 1:1 aspect ratio },
+         },
+        (decodedText) => {
+            handleScannedData(decodedText);
+            closeCameraModal();
+        },
+        (errorMessage) => console.warn(`QR Code scan failed: ${errorMessage}`)
+    ).catch(err => console.error(`Unable to start scanning, error: ${err}`));
+
+    // Set a timer to automatically close the modal after 20 seconds
+    modalTimeout = setTimeout(() => {
+        closeCameraModal();
+    }, 10000);
+}
+
+
+
+// Close the camera modal and stop the QR scanner
+function closeCameraModal() {
+    const cameraModal = document.getElementById('cameraModal');
+    cameraModal.style.display = 'none';
+
+    // Stop the QR code scanner if it's active
+    if (qrReader) {
+        qrReader.stop().catch(err => console.error(`Unable to stop scanning, error: ${err}`));
+    }
+
+    // Clear the timer if it's still active
+    clearTimeout(modalTimeout);
+}
+
+// Close the modal when the user clicks the close button
+document.getElementById('closeCameraModal').onclick = closeCameraModal;
+
+// Close the modal if the user clicks outside of the modal content
+window.onclick = function(event) {
+    const cameraModal = document.getElementById('cameraModal');
+    if (event.target === cameraModal) {
+        closeCameraModal();
+    }
+}
+
+/// Übergabe QAR Code an Backend
+function handleScannedData(decodedText) {
+    try {
+        const scannedData = JSON.parse(decodedText);
+        if (scannedData.generated_key) {
+            // Log user_id and courtnumber fetched from the JSON
+            console.log(`User ID: ${user_id}, Court Number: ${courtnumber}`);
+            
+            // Display the scanned key and send data to the backend
+            document.getElementById('qr-reader-results').innerText = `Generated Key: ${scannedData.generated_key}`;
+            sendScannedDataToBackend(scannedData.generated_key, user_id, courtnumber);
+        } else {
+            throw new Error('Invalid QR code format');
+        }
+    } catch (e) {
+        console.error('Invalid QR code format. Expected JSON with a generated_key.', e);
+        document.getElementById('qr-reader-results').innerText = `Invalid QR code format. Scanned text: ${decodedText}`;
+    }
+}
+
+// Function to send the scanned data to the backend
+async function sendScannedDataToBackend(generatedKey, user_id, courtnumber) {
+    try {
+        const response = await fetch(`http://127.0.0.1:3000/display-court/${generatedKey}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: user_id,
+                courtnumber: courtnumber
+            })
+        });
+
+        if (response.ok) {
+            console.log('Data sent to backend successfully.');
+            document.getElementById('qr-reader-results').innerText += ' - Data successfully sent!';
+        } else {
+            console.error('Failed to send data to backend.');
+        }
+    } catch (error) {
+        console.error('Error sending data to backend:', error);
+    }
+}
+
+// Start the QR scanner when the page loads
+window.onload = function() {
+            
+        };
+
+
+///////////
 
 function enableStatusEdit() {
     document.getElementById('statusText').style.display = 'none';

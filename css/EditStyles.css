@@ -419,3 +419,105 @@ th, td {
     border-style: solid;
     border-color: transparent transparent #f9f9f9 transparent; /* Triangle pointing up */
 }
+
+/* Modal Background QR Code*/
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark background */
+}
+
+/* Modal Content QR Code*/
+/* Modal Background */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark background */
+}
+
+/* Modal Content */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark background */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fff;
+    width: 80%;
+    height: 80%; /* Ensures modal covers full screen */
+    display: flex;
+    justify-content: center; /* Centers the content horizontally */
+    align-items: center; /* Centers the content vertically */
+    padding: 0; /* Remove padding to maximize space */
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Camera Screen */
+.qr-reader {
+    width: 80%; /* Full width */
+    height: 80%; /* Full height */
+    border: none; /* Remove border to maximize display */
+}
+
+/* Close Button */
+.close {
+    color: #aaa;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 68px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10; /* Ensure it appears above the camera */
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+}
+.qr-reader-results{
+    color: #00bc13;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    text-align: center; /* Centers text within the element */
+    height: 100%; /* Ensures vertical centering if container has a defined height */
+}
+.generateButton{
+    background-color: #6e6e6e;
+    color: #ffffff;
+    height: 120px;
+    width: 33%;
+    font-size: 30px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 33%; /* Adjust margin-left as needed */
+}

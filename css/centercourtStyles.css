@@ -1,7 +1,17 @@
+.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    z-index: 1000;
+    overflow: auto;
+}
 /* General body styling */
 body {
     font-family: Verdana, sans-serif;
-    font-weight: 100;
+    font-weight: 100px;
     color: #515050;
     margin: 0;
     padding: 0;
@@ -9,6 +19,12 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+.qrCode img {
+    width: 200px;  /* Adjust the width as needed */
+    height: 200px; /* Adjust the height as needed */
+    border: none;
+    border-radius: 0; 
 }
 
 /* Image styling */
@@ -23,8 +39,8 @@ img {
 
 /* Court table styling */
 .CourtTable {
-    width:140vb; /* Ensure table takes full width */
-    height: 80vb;
+    width:100vb; /* Ensure table takes full width */
+    height: 70vb;
     border-collapse: collapse; /* Collapse borders */
 }
 
@@ -35,9 +51,9 @@ img {
     border-radius: 25px;
     padding: 20px;
      /* Adjusted margin for better spacing on larger screens */
-    margin-left: -10vb;
-    width:140vb; /* Ensure table takes full width */
-    height: 100vb;
+    margin-left: 25%;
+    width:100vb; /* Ensure table takes full width */
+    height: 96vb;
 }
 
 /* Court number styling */

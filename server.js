@@ -300,6 +300,34 @@ app.get('/display-court/:key', async (req, res) => {
         res.status(500).json({ error: 'Error retrieving court details' });
     }
 });
+//////////
+
+// Route to filter matches by generated_key using a database query
+app.get('/matches/enteredkey', async (req, res) => {
+    const enteredKey = req.query.key;
+
+    if (!enteredKey) {
+        return res.status(400).json({ error: 'No key provided' });
+    }
+
+    try {
+        // SQL query to select matches based on generated_key
+        const result = await pool.query('SELECT * FROM tennis_match WHERE generated_key = $1', [enteredKey]);
+
+        if (result.rows.length > 0) {
+            res.json({ matches: result.rows });
+        } else {
+            res.json({ matches: [] });
+        }
+    } catch (error) {
+        console.error('Error querying database:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+
 
 ////////CRON - court_keys älter als 2 Tage----------->
 

@@ -41,6 +41,15 @@
                             <th colspan="3">Games</th>
                             <th colspan="1">Points</th>
                         </tr>
+                        <tr class="DisplayGameNumbers">
+                            <th></th>
+                            <th></th>
+                            <th>3</th>
+                            <th>2</th>
+                            <th>1</th>
+                            <th>{{#if (eq tiebreak_mode 1)}}<p>Tiebreak</p> {{/if}}</th>
+                            <th></th>
+                        </tr>
                     </thead>
                     <tbody>
                         <tr><td class="spielerverein">{{spieler1_verein}}</td></tr>
@@ -172,43 +181,47 @@
 
 // User Input 
 
-        function showGameOverview() {
-            const userInput = document.getElementById('user-input').value.trim();
-            if (userInput) {
-                document.querySelector('.input-container').style.display = 'none';
-                document.getElementById('qrCode').style.display = 'none';
-                document.getElementById('courtInfo').style.display = 'none';
+// Define globally
+let enteredKey = null;
 
-                const gameOverview = document.getElementById('game-overview');
-                gameOverview.style.display = 'block';
+async function showGameOverview() {
+    enteredKey = document.getElementById('user-input').value.trim();
 
-                fetchFilteredMatches(userInput);
-            }
+    if (!enteredKey) {
+        console.error('No key entered');
+        return;
+    }
+
+    try {
+        const fullUrl = `${config.apiBaseUrl}/matches/enteredkey?key=${enteredKey}`;
+        console.log('Fetching matches with entered key:', fullUrl);
+
+        const matchesResponse = await fetch(fullUrl);
+
+        if (!matchesResponse.ok) {
+            console.error('Error fetching matches:', matchesResponse.status);
+            return;
         }
 
-        async function fetchFilteredMatches(generatedKey) {
-    try {
-        const matchesUrl = `${config.apiBaseUrl}/matches/generated_key=${generatedKey}`;
-        console.log('Fetching filtered matches from URL1:', matchesUrl);
-
-        const matchesResponse = await fetch(matchesUrl);
         const matchesData = await matchesResponse.json();
-
-        // Filter matches to include only those where external_id matches id
-        const filteredMatches = matchesData.matches
-            ? matchesData.matches.filter(match => match.id === generatedKey)
-            : [];
-
-        updateMatches(filteredMatches); // Show filtered match
+        updateMatches(matchesData.matches || matchesData);
     } catch (error) {
-        console.error('Error fetching filtered matches:', error);
+        console.error('Error fetching matches for the entered key:', error);
     }
 }
-
+// This function will handle interval-based fetching
+function fetchMatchesWithEnteredKey() {
+    if (enteredKey) {
+        showGameOverview(); // Only fetch if there is a valid enteredKey
+    }
+}
+     
+//////////////
         window.onload = function() {
             generateQR();
             fetchCourtData();
             setInterval(fetchCourtData, 5000);
+            setInterval(fetchMatchesWithEnteredKey, 5000);
         };
 
         Handlebars.registerHelper('eq', function(a, b) {

@@ -6,14 +6,16 @@
     <title>Center Court QR Code Generator</title>
     <link rel="stylesheet" href="css/centercourtStyles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-    <script defer src="/handlebars/handlebars.js"></script>
-    <script src="/config.js"></script> <!-- Konfigurationsdatei -->
+    <script src="/config.js"></script>
 </head>
 <body>
+    <div id="game-overview" style="display: block; visibility: visible;">
+        <div id="matches-container"></div>
+    </div>
+
     <h1>QR Code für Spielcourt</h1>
-    <p id="qrCode" class="qrCode"></p> <!-- QR-Code wird hier generiert -->
-    
-    <!-- Display scanned court info -->
+    <p id="qrCode" class="qrCode"></p>
+
     <div id="courtInfo" style="display:none;">
         <h2>Court Information</h2>
         <p><strong>User ID:</strong> <span id="user_id"></span></p>
@@ -24,10 +26,6 @@
         <label for="user-input">Center Court Key eingeben:</label>
         <input type="text" id="user-input" placeholder="Enter key">
         <button onclick="showGameOverview()">Submit</button>
-    </div>
-
-    <div id="game-overview" >
-        <div id="matches-container"></div>
     </div>
 
     <script id="matches-template" type="text/x-handlebars-template">
@@ -45,11 +43,9 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr><td class="spielerverein">{{spieler1_verein}}</td></tr>
                         <tr>
-                            <td class="spielerverein">{{spieler1_verein}}</td>
-                        </tr>
-                        <tr>
-                            <td class="spielerfeld">{{spieler1}} </td>
+                            <td class="spielerfeld">{{spieler1}}</td>
                             <td class="spielwerte">{{spieler1_satz}}</td>
                             <td class="spielwerte">{{spieler1_spiel3}}</td>
                             <td class="spielwerte">{{spieler1_spiel2}}</td>
@@ -61,13 +57,11 @@
                                     {{spieler1_punkte}}
                                 {{/if}}
                             </td>
-                            <td class="serveImage"> {{#if (eq serve1 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                            <td class="serveImage">{{#if (eq serve1 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
                         </tr>
+                        <tr><td class="spielerverein">{{spieler2_verein}}</td></tr>
                         <tr>
-                            <td class="spielerverein">{{spieler2_verein}}</td>
-                        </tr>
-                        <tr>
-                            <td class="spielerfeld">{{spieler2}} </td>
+                            <td class="spielerfeld">{{spieler2}}</td>
                             <td class="spielwerte">{{spieler2_satz}}</td>
                             <td class="spielwerte">{{spieler2_spiel3}}</td>
                             <td class="spielwerte">{{spieler2_spiel2}}</td>
@@ -79,7 +73,7 @@
                                     {{spieler2_punkte}}
                                 {{/if}}
                             </td>
-                            <td class="serveImage"> {{#if (eq serve2 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                            <td class="serveImage">{{#if (eq serve2 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -87,165 +81,137 @@
                     <span>Spielklasse: {{spielklasse}}</span>
                     <span>Altersklasse: {{altersklasse}}</span>
                 </div>
-                <div class="CourtDescription2"> 
+                <div class="CourtDescription2">
                     <span>Status: {{spielstatus}}</span>
                     <span>ID: {{id}}</span>
-              </div>
+                </div>
             </div>
         </div>
         {{/each}}
     </script>
 
     <script>
-        // Global configuration object
         const config = {
             baseUrl: `http://${IP.ipAddress}:5500`,
             apiBaseUrl: `http://${IP.ipAddress}:3000`
         };
+        
+        let scannedExternalId = null;
+        let generatedKey = null; // Declare globally
 
-        let allMatches = [];
-
-        // Function to generate the QR code on page load
         async function generateQR() {
             try {
                 const response = await fetch(`${config.apiBaseUrl}/generate-center-court-qr`);
                 const data = await response.json();
-                
                 if (data.generated_key) {
-                    const qrCodeData = JSON.stringify({ generated_key: data.generated_key });
+                    generatedKey = data.generated_key; // Assign globally
+                    const qrCodeData = JSON.stringify({ generated_key: generatedKey });
                     document.getElementById('qrCode').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrCodeData)}&size=150x150" />`;
-                    startFetchingCourtInfo(data.generated_key);
+                    startFetchingCourtInfo(generatedKey);
                 } else {
                     console.error('Generated key not found in response');
                 }
             } catch (error) {
-                console.error('Fehler beim Generieren des QR-Codes:', error);
+                console.error('Error generating QR code:', error);
             }
         }
 
-        // Fetch and update matches
-        async function fetchAndUpdateMatches() {
+        async function fetchCourtData() {
             try {
-                const response = await fetch(`${config.apiBaseUrl}/matches/`);
-                const data = await response.json();
-                allMatches = data;
-                updateMatches();
-            } catch (error) {
-                console.error('Error fetching match data:', error);
-            }
-        }
-
-        // Update match view based on filters
-        function updateMatches() {
-            const filters = getFilters();
-            let filteredData = [];
-
-            if (filters.generatedKey) {
-                filteredData = allMatches.filter(match => {
-                    return match.generated_key && match.generated_key.toString() === filters.generatedKey;
-                });
-            }
-
-            const matchesContainer = document.getElementById('matches-container');
-            const source = document.getElementById('matches-template').innerHTML;
-            const template = Handlebars.compile(source);
-            const newHtml = template({ matches: filteredData });
-
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = newHtml;
-
-            const newNodes = tempDiv.childNodes;
-            const oldNodes = matchesContainer.childNodes;
-
-            for (let i = 0; i < newNodes.length; i++) {
-                if (!oldNodes[i] || newNodes[i].outerHTML !== oldNodes[i].outerHTML) {
-                    if (oldNodes[i]) {
-                        matchesContainer.replaceChild(newNodes[i].cloneNode(true), oldNodes[i]);
-                    } else {
-                        matchesContainer.appendChild(newNodes[i].cloneNode(true));
-                    }
+                if (!generatedKey) {
+                    console.error('generatedKey is not set');
+                    return;
                 }
+
+                const fullUrl = `${config.apiBaseUrl}/display-court/${generatedKey}`;
+                console.log('Fetching court data from URL:', fullUrl);
+
+                const response = await fetch(fullUrl, { method: 'GET' });
+                const courtData = await response.json();
+
+                if (courtData && courtData.external_id) {
+                    scannedExternalId = courtData.external_id;
+                    const matchesUrl = `${config.apiBaseUrl}/matches/filter?id=${scannedExternalId}`;
+                    console.log('Fetching matches data from URL:', matchesUrl);
+
+                    const matchesResponse = await fetch(matchesUrl);
+                    const matchesData = await matchesResponse.json();
+
+                    console.log("Matches Data:", matchesData); // Check data structure
+
+// Show all matches initially
+                    updateMatches(matchesData.matches || matchesData); 
+                }
+            } catch (error) {
+                console.error('Error fetching court data:', error);
             }
         }
+// After Scan show Game and Hode QR Code and text
+        function updateMatches(filteredData) {
+    const matchesContainer = document.getElementById('matches-container');
+    const source = document.getElementById('matches-template').innerHTML;
+    const template = Handlebars.compile(source);
 
-        function getFilters() {
-            return { generatedKey: document.getElementById('user-input').value };
-        }
+    console.log("Filtered Data for Template:", filteredData); // Verify data before rendering
 
-        function applyFilters() {
-            console.log('Filters applied:', getFilters());
-            updateMatches();
-        }
+    matchesContainer.innerHTML = (filteredData && filteredData.length > 0)
+        ? template({ matches: filteredData })
+        : "<p>No matches found for this court.</p>";
 
-////////////////
-////Fecth data after QR code scan 
-async function fetchCourtInfo(generatedKey) {
-    try {
-        const response = await fetch(`${config.apiBaseUrl}/display-court/${generatedKey}`, { method: 'GET' });
-        const data = await response.json();
-
-        // Log data to check what is actually received
-        //console.log("Fetched court data:", data);
-
-        // Check if data is valid and contains the expected fields
-        if (data && data.user_id && data.courtnumber) {
-            // Populate the user ID and court number fields
-            document.getElementById('user_id').textContent = data.user_id;
-            document.getElementById('courtnumber').textContent = data.courtnumber;
-
-            // Hide QR code, input container, and court info display
-            document.querySelector('.input-container').style.display = 'none';
-            document.getElementById('qrCode').style.display = 'none';
-            document.getElementById('courtInfo').style.display = 'none';
-
-            // Show game overview in fullscreen
-            const gameOverview = document.getElementById('game-overview');
-            gameOverview.style.display = 'block';
-            gameOverview.classList.add('fullscreen');
-
-            // Apply filters to show the relevant match data
-            
-        } else {
-            console.error('Court information not found or incomplete for the key');
-            //alert('Court information not found or incomplete for the provided key.');
-        }
-    } catch (error) {
-        console.error('Error fetching court information:', error);
-        alert('An error occurred while fetching court information. Please try again.');
+    // Hide QR code and input when there is exactly one match
+    if (filteredData && filteredData.length === 1) {
+        document.getElementById('qrCode').style.display = 'none';
+        document.querySelector('.input-container').style.display = 'none';
+        document.querySelector('h1').style.display = 'none'; // Hide the <h1> element
+    } else {
+        document.getElementById('qrCode').style.display = 'block';
+        document.querySelector('.input-container').style.display = 'block';
+        document.querySelector('h1').style.display = 'block'; // Show the <h1> element if more than one match
     }
 }
 
-        // Start fetching court info every 5 seconds
-        function startFetchingCourtInfo(generatedKey) {
-            fetchCourtInfo(generatedKey);
-            setInterval(() => fetchCourtInfo(generatedKey), 5000);
-        }
-////////////////
-        // Show game overview on match search
+// User Input 
+
         function showGameOverview() {
-            const userInput = document.getElementById('user-input').value;
-            if (userInput.trim() !== '') {
+            const userInput = document.getElementById('user-input').value.trim();
+            if (userInput) {
                 document.querySelector('.input-container').style.display = 'none';
                 document.getElementById('qrCode').style.display = 'none';
                 document.getElementById('courtInfo').style.display = 'none';
 
-        //Show game overview in fullscreen
                 const gameOverview = document.getElementById('game-overview');
                 gameOverview.style.display = 'block';
-                gameOverview.classList.add('fullscreen');
-                applyFilters();
+
+                fetchFilteredMatches(userInput);
             }
         }
 
-        // Run when page loads
+        async function fetchFilteredMatches(generatedKey) {
+    try {
+        const matchesUrl = `${config.apiBaseUrl}/matches/generated_key=${generatedKey}`;
+        console.log('Fetching filtered matches from URL1:', matchesUrl);
+
+        const matchesResponse = await fetch(matchesUrl);
+        const matchesData = await matchesResponse.json();
+
+        // Filter matches to include only those where external_id matches id
+        const filteredMatches = matchesData.matches
+            ? matchesData.matches.filter(match => match.id === generatedKey)
+            : [];
+
+        updateMatches(filteredMatches); // Show filtered match
+    } catch (error) {
+        console.error('Error fetching filtered matches:', error);
+    }
+}
+
         window.onload = function() {
             generateQR();
-            fetchAndUpdateMatches();
-            setInterval(fetchAndUpdateMatches, 5000); // Update matches every 5 seconds
+            fetchCourtData();
+            setInterval(fetchCourtData, 5000);
         };
 
-          // Registering the 'eq' helper in Handlebars
-          Handlebars.registerHelper('eq', function(a, b) {
+        Handlebars.registerHelper('eq', function(a, b) {
             return a === b;
         });
     </script>

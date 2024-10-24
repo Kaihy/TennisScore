@@ -7,9 +7,11 @@ const validator = require('validator');
 const { dbConfig } = require('./config');
 const config = require('./config');
 const { v4: uuidv4 } = require('uuid'); // Import uuid for generating unique keys
+const cron = require('node-cron');
 
 const app = express();
 const port = 3000;
+
 
 // Configure the PostgreSQL connection using the imported config
 const pool = new Pool(dbConfig);
@@ -144,6 +146,28 @@ app.get('/matches', async (req, res) => {
     }
 });
 
+// Endpoint to fetch matches filtered by id
+app.get('/matches/filter', async (req, res) => {
+    const { id } = req.query;  // Get id from query parameters
+
+    // Check if external_id is provided
+    if (!id) {
+        return res.status(400).json({ error: 'id query parameter is required' });
+    }
+
+    try {
+        // Query to fetch matches where external_id matches and deleteflag is 0
+        const result = await pool.query('SELECT * FROM tennis_match WHERE deleteflag = 0 AND id = $1', [id]);
+        
+        // Send back the result
+        res.status(200).json({ matches: result.rows });
+    } catch (err) {
+        console.error('Error fetching filtered matches:', err);
+        res.status(500).json({ error: 'An error occurred while fetching filtered matches' });
+    }
+});
+
+
 // Endpoint to update match data
 app.patch('/update/:id', async (req, res) => {
     const { id } = req.params;
@@ -233,13 +257,13 @@ app.get('/generate-center-court-qr', async (req, res) => {
  // Create User id and Courtnumber in table court_keys
 app.post('/display-court/:key', async (req, res) => {
     const key = req.params.key;
-    const { user_id, courtnumber } = req.body;
+    const { external_id, user_id, courtnumber } = req.body;
 
     try {
         // Update the court_keys table with the new user_id and courtnumber
         const result = await pool.query(
-            'UPDATE court_keys SET user_id = $1, courtnumber = $2 WHERE key = $3',
-            [user_id, courtnumber, key]
+            'UPDATE court_keys SET user_id = $1, courtnumber = $2, external_id =$3 WHERE key = $4',
+            [user_id, courtnumber, external_id, key]
         );
 
         // Check if the update was successful (if any rows were updated)
@@ -260,12 +284,13 @@ app.get('/display-court/:key', async (req, res) => {
     const key = req.params.key;
 
     try {
-        const result = await pool.query('SELECT user_id, courtnumber FROM court_keys WHERE key = $1', [key]);
+        const result = await pool.query('SELECT user_id, courtnumber, external_id FROM court_keys WHERE key = $1', [key]);
 
         if (result.rows.length > 0) {
             res.json({
                 user_id: result.rows[0].user_id,
-                courtnumber: result.rows[0].courtnumber
+                courtnumber: result.rows[0].courtnumber,
+                external_id: result.rows[0].external_id
             });
         } else {
             res.status(404).json({ error: 'Court Key not found' });
@@ -275,6 +300,28 @@ app.get('/display-court/:key', async (req, res) => {
         res.status(500).json({ error: 'Error retrieving court details' });
     }
 });
+
+////////CRON - court_keys älter als 2 Tage----------->
+
+// Schedule the task to run daily at midnight
+cron.schedule('0 0 * * *', async () => {
+    try {
+        const result = await pool.query(`
+            DELETE FROM court_keys
+            WHERE created_at < NOW() - INTERVAL '2 days'
+        `);
+        console.log(`Deleted ${result.rowCount} rows older than two days.`);
+    } catch (error) {
+        console.error('Error deleting old rows:', error);
+    }
+});
+
+process.on('exit', () => {
+    pool.end();
+});
+
+////////////
+
 
 app.use(express.static('public'));
 app.use(express.json());

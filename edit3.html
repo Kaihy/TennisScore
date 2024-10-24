@@ -667,7 +667,7 @@ function handleScannedData(decodedText) {
 // Function to send the scanned data to the backend
 async function sendScannedDataToBackend(generatedKey, user_id, courtnumber) {
     try {
-        const response = await fetch(`http://127.0.0.1:3000/display-court/${generatedKey}`, {
+        const response = await fetch(`${config.apiBaseUrl}/display-court/${generatedKey}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -675,6 +675,7 @@ async function sendScannedDataToBackend(generatedKey, user_id, courtnumber) {
             },
             body: JSON.stringify({
                 user_id: user_id,
+                external_id: Idextracted,  // Neue ID hinzugefügt
                 courtnumber: courtnumber
             })
         });

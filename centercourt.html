@@ -148,75 +148,91 @@
 
                     console.log("Matches Data:", matchesData); // Check data structure
 
-// Show all matches initially
+                    // Show all matches initially
                     updateMatches(matchesData.matches || matchesData); 
                 }
             } catch (error) {
                 console.error('Error fetching court data:', error);
             }
         }
-// After Scan show Game and Hode QR Code and text
-        function updateMatches(filteredData) {
-    const matchesContainer = document.getElementById('matches-container');
-    const source = document.getElementById('matches-template').innerHTML;
-    const template = Handlebars.compile(source);
 
-    console.log("Filtered Data for Template:", filteredData); // Verify data before rendering
-
-    matchesContainer.innerHTML = (filteredData && filteredData.length > 0)
-        ? template({ matches: filteredData })
-        : "<p>No matches found for this court.</p>";
-
-    // Hide QR code and input when there is exactly one match
-    if (filteredData && filteredData.length === 1) {
-        document.getElementById('qrCode').style.display = 'none';
-        document.querySelector('.input-container').style.display = 'none';
-        document.querySelector('h1').style.display = 'none'; // Hide the <h1> element
-    } else {
-        document.getElementById('qrCode').style.display = 'block';
-        document.querySelector('.input-container').style.display = 'block';
-        document.querySelector('h1').style.display = 'block'; // Show the <h1> element if more than one match
-    }
-}
-
-// User Input 
-
-// Define globally
-let enteredKey = null;
-
-async function showGameOverview() {
-    enteredKey = document.getElementById('user-input').value.trim();
-
-    if (!enteredKey) {
-        console.error('No key entered');
-        return;
-    }
-
-    try {
-        const fullUrl = `${config.apiBaseUrl}/matches/enteredkey?key=${enteredKey}`;
-        console.log('Fetching matches with entered key:', fullUrl);
-
-        const matchesResponse = await fetch(fullUrl);
-
-        if (!matchesResponse.ok) {
-            console.error('Error fetching matches:', matchesResponse.status);
-            return;
+        // Function to enter fullscreen mode
+        function enterFullscreen(element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) { // Firefox
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) { // Chrome, Safari, and Opera
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) { // IE/Edge
+                element.msRequestFullscreen();
+            }
         }
 
-        const matchesData = await matchesResponse.json();
-        updateMatches(matchesData.matches || matchesData);
-    } catch (error) {
-        console.error('Error fetching matches for the entered key:', error);
-    }
-}
-// This function will handle interval-based fetching
-function fetchMatchesWithEnteredKey() {
-    if (enteredKey) {
-        showGameOverview(); // Only fetch if there is a valid enteredKey
-    }
-}
+        // After Scan show Game and Hide QR Code and text
+        function updateMatches(filteredData) {
+            const matchesContainer = document.getElementById('matches-container');
+            const source = document.getElementById('matches-template').innerHTML;
+            const template = Handlebars.compile(source);
+
+            console.log("Filtered Data for Template:", filteredData); // Verify data before rendering
+
+            matchesContainer.innerHTML = (filteredData && filteredData.length > 0)
+                ? template({ matches: filteredData })
+                : "<p>No matches found for this court.</p>";
+
+            // Hide QR code and input when there is exactly one match
+            if (filteredData && filteredData.length === 1) {
+                document.getElementById('qrCode').style.display = 'none';
+                document.querySelector('.input-container').style.display = 'none';
+                document.querySelector('h1').style.display = 'none'; // Hide the <h1> element
+                
+                // Enter fullscreen when the game is shown
+                const gameOverview = document.getElementById('game-overview');
+                enterFullscreen(gameOverview);
+            } else {
+                document.getElementById('qrCode').style.display = 'block';
+                document.querySelector('.input-container').style.display = 'block';
+                document.querySelector('h1').style.display = 'block'; // Show the <h1> element if more than one match
+            }
+        }
+
+        // User Input 
+        let enteredKey = null;
+
+        async function showGameOverview() {
+            enteredKey = document.getElementById('user-input').value.trim();
+
+            if (!enteredKey) {
+                console.error('No key entered');
+                return;
+            }
+
+            try {
+                const fullUrl = `${config.apiBaseUrl}/matches/enteredkey?key=${enteredKey}`;
+                console.log('Fetching matches with entered key:', fullUrl);
+
+                const matchesResponse = await fetch(fullUrl);
+
+                if (!matchesResponse.ok) {
+                    console.error('Error fetching matches:', matchesResponse.status);
+                    return;
+                }
+
+                const matchesData = await matchesResponse.json();
+                updateMatches(matchesData.matches || matchesData);
+            } catch (error) {
+                console.error('Error fetching matches for the entered key:', error);
+            }
+        }
+
+        // This function will handle interval-based fetching
+        function fetchMatchesWithEnteredKey() {
+            if (enteredKey) {
+                showGameOverview(); // Only fetch if there is a valid enteredKey
+            }
+        }
      
-//////////////
         window.onload = function() {
             generateQR();
             fetchCourtData();

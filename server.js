@@ -150,25 +150,39 @@ app.post('/resend-verification', async (req, res) => {
 
 
 ///////////// User login route
+// User login route
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
-    // Check if the username is a valid email
+    // Überprüfen, ob die E-Mail-Adresse im gültigen Format vorliegt
     if (!validator.isEmail(username)) {
         return res.status(400).send('Invalid email format');
     }
 
     try {
+        // Suche nach dem Benutzer in der Datenbank
         const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        
         if (result.rows.length > 0) {
             const user = result.rows[0];
+            
+            // Überprüfe, ob die E-Mail-Adresse verifiziert ist
+            if (user.isverified !== 1) {
+                return res.status(403).send('Please verify your email before logging in.');
+            }
+
+            // Überprüfe das Passwort
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
-                // Send a JSON response with userId
+                // Erfolgreiches Login: Rückgabe der Benutzer-ID
                 res.json({ message: 'Login successful', user_id: user.id });
             } else {
+                // Passwort stimmt nicht überein
                 res.status(401).send('Invalid credentials');
             }
+        } else {
+            // Benutzer nicht gefunden
+            res.status(404).send('User not found');
         }
     } catch (err) {
         console.error(err);

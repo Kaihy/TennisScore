@@ -49,40 +49,36 @@
             window.location.href = `${config.baseUrl}/index.html`;
         }
 
-        // Handle the login form submission
         document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-    
-            const username = document.getElementById('username').value; 
-            const password = document.getElementById('password').value;
-    
-            try {
-                const response = await fetch(`${config.apiBaseUrl}/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username, password }),
-                });
-    
-                if (response.ok) {
-                    // Parse the JSON response to get the data
-                    const data = await response.json();
-                
+    event.preventDefault();
 
-                    // Store the User ID in local storage
-                    localStorage.setItem('userId', data.user_id);
-                    console.log('Logged in user ID:', data.user_id);
+    const username = document.getElementById('username').value; 
+    const password = document.getElementById('password').value;
 
-                    // Redirect to the index page or another page
-                    IndexHtmlUrl();
-                } else {
-                    alert('Login failed');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
+    try {
+        const response = await fetch(`${config.apiBaseUrl}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password }),
         });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem('userId', data.user_id);
+            console.log('Logged in user ID:', data.user_id);
+            IndexHtmlUrl();
+        } else {
+            // Hole die Fehlermeldung aus der Antwort
+            const message = await response.text();
+            alert(message);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
     </script>
 </body>
 </html>

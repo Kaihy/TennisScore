@@ -145,6 +145,29 @@ button[type="submit"]:hover {
     background-color: #f1f1f1;
 }
 
+/* Style the link as a button */
+.button-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Button color */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Hover effect */
+.button-link:hover {
+    background-color: #45a049;
+}
+
+/* Center the link */
+.center-link {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px; /* Optional spacing */
+}
 
 
 

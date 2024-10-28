@@ -4,10 +4,11 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
-const { dbConfig } = require('./config');
+const { dbConfig, emailConfig } = require('./config');
 const config = require('./config');
 const { v4: uuidv4 } = require('uuid'); // Import uuid for generating unique keys
 const cron = require('node-cron');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const port = 3000;
@@ -21,11 +22,38 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// User registration route
+/////////////
+
+
+
+//////////// User registration route
+// Function to send verification email
+async function sendVerificationEmail(email, verificationCode) {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: emailConfig.user,  // Benutzer aus der config.js
+            pass: emailConfig.pass,  // Passwort aus der config.js
+        },
+    });
+
+    const verificationLink = `http://${config.IP.ipAddress}:${port}/verify-email?code=${verificationCode}`;
+    const mailOptions = {
+        from: emailConfig.user,
+        to: email,
+        subject: 'Email Verification',
+        html: `<p>Please verify your email by clicking on the link below:</p><a href="${verificationLink}">Verify Email</a>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
+
+
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
 
-    // Check if the username is a valid email
+    // Validate email format
     if (!validator.isEmail(username)) {
         return res.status(400).send('Invalid email format');
     }
@@ -37,23 +65,91 @@ app.post('/register', async (req, res) => {
             return res.status(400).send('Email already exists');
         }
 
-        // Hash the password
+        // Generate and hash the password and verification code
         const hashedPassword = await bcrypt.hash(password, 10);
+        const verificationCode = uuidv4();
 
-        // Insert the new user into the database
+        // Insert user with verification code into the database
         await pool.query(
-            'INSERT INTO users (username, password) VALUES ($1, $2)',
-            [username, hashedPassword]
+            'INSERT INTO users (username, password, verification_code, isVerified) VALUES ($1, $2, $3, $4)',
+            [username, hashedPassword, verificationCode, 0]
         );
 
-        res.send('Registration successful');
+        // Send verification email
+        await sendVerificationEmail(username, verificationCode);
+
+        res.send('Registration successful, please verify your email');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+////////////////////////Verify-mail
+app.get('/verify-email', async (req, res) => {
+    const { code } = req.query;
+
+    try {
+        const result = await pool.query(
+            'UPDATE users SET isVerified = 1, verification_code = NULL WHERE verification_code = $1 AND isVerified = 0 RETURNING username',
+            [code]
+        );
+
+        if (result.rowCount > 0) {
+            res.status(200).send('Email verified successfully');
+        } else {
+            res.status(400).send('Invalid or expired verification link');
+        }
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
     }
 });
 
-// User login route
+////////////////////////resend Verification Link: 
+app.post('/resend-verification', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        // Find the user in the database
+        const result = await pool.query(
+            'SELECT * FROM users WHERE username = $1',
+            [email]
+        );
+
+        // Check if user exists and is not already verified
+        if (result.rows.length === 0) {
+            return res.status(404).send('User not found');
+        }
+
+        const user = result.rows[0];
+        if (user.isverified === 1) {
+            return res.status(400).send('User is already verified');
+        }
+
+        // Generate a new verification code and update the database
+        const verificationCode = uuidv4();
+        await pool.query(
+            'UPDATE users SET verification_code = $1 WHERE username = $2',
+            [verificationCode, email]
+        );
+
+        // Resend the verification email
+        await sendVerificationEmail(email, verificationCode);
+
+        res.send('Verification email resent successfully');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+/////////////////////////
+
+
+
+
+
+
+///////////// User login route
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -80,9 +176,15 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// Password renewal route
+
+
+
+
+//////////11 Password renewal route
 app.post('/renew-password', async (req, res) => {
-    const { username, newPassword } = req.body;
+    const { username } = req.body;
+    const resetToken = uuidv4();
+    const tokenExpiry = new Date(Date.now() + 15 * 60 * 1000); // Token expires in 15 minutes
 
     try {
         // Check if the user exists
@@ -91,18 +193,98 @@ app.post('/renew-password', async (req, res) => {
             return res.status(404).send('User not found');
         }
 
-        // Hash the new password
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // Save the reset token and expiry in the database
+        await pool.query(
+            'UPDATE users SET reset_token = $1, token_expiry = $2 WHERE username = $3',
+            [resetToken, tokenExpiry, username]
+        );
 
-        // Update the user's password in the database
-        await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedPassword, username]);
+        // Send the password reset email with the verification link
+        const resetLink = `http://${config.IP.ipAddress}:${port}/reset-password?token=${resetToken}`;
+        await sendPasswordResetEmail(username, resetLink);
 
-        res.send('Password renewed successfully');
+        res.send('A verification link has been sent to your email. Please confirm to reset your password.');
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
     }
 });
+
+// Function to send password reset email
+async function sendPasswordResetEmail(email, resetLink) {
+    const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: emailConfig.user,  // Benutzer aus der config.js
+            pass: emailConfig.pass,  // Passwort aus der config.js
+        },
+    });
+
+    const mailOptions = {
+        from: emailConfig.user,
+        to: email,
+        subject: 'Password Reset Request',
+        html: `<p>Please reset your password by clicking the link below. This link is valid for 15 minutes:</p><a href="${resetLink}">Reset Password</a>`
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+
+/////////////////11
+///////////////2222
+app.get('/reset-password', async (req, res) => {
+    const { token } = req.query;
+
+    try {
+        const result = await pool.query(
+            'SELECT * FROM users WHERE reset_token = $1 AND token_expiry > NOW()',
+            [token]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        // Token is valid, render password reset form or redirect to it
+        res.send('<form method="POST" action="/confirm-reset"><input type="hidden" name="token" value="'+ token +'"/><input type="password" name="newPassword" placeholder="New Password"/><button type="submit">Reset Password</button></form>');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+//////////2222
+//////33
+app.post('/confirm-reset', async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        const result = await pool.query(
+            'SELECT * FROM users WHERE reset_token = $1 AND token_expiry > NOW()',
+            [token]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update password, clear reset token and expiry
+        await pool.query(
+            'UPDATE users SET password = $1, reset_token = NULL, token_expiry = NULL WHERE reset_token = $2',
+            [hashedPassword, token]
+        );
+
+        res.send('Your password has been updated successfully');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
+//////33
 
 // Endpoint to handle adding a new match
 app.post('/add', async (req, res) => {

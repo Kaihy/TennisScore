@@ -13,5 +13,9 @@ module.exports = {
       database: 'Tennis_App', // Replace with your PostgreSQL database name
       password: '12345',      // Replace with your PostgreSQL password
       port: 5432,             // Default PostgreSQL port
-    }
+    },
+    emailConfig: { 
+      user: 'kaiheinricy@gmail.com', 
+      pass: 'gvjm gevh dnnl yter'
+  }
   };

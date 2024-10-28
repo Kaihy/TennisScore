@@ -31,8 +31,12 @@
         <label for="regPassword">Password:</label>
         <input type="password" id="regPassword" name="regPassword" required>
         <br>
-        <button type="submit">Register</button>
+        <button type="submit">Registration</button>
     </form>
+
+    <div class="center-link">
+        <a href="#" id="resendVerification" class="button-link">Verifizierungscode erneut senden</a>
+    </div>
     <script>
     const config = {
             baseUrl: `http://${IP.ipAddress}:5500`,
@@ -79,6 +83,38 @@ function UserLoginHtmlUrl() {
             console.error('Error:', error);
         }
     });
+
+   ////////
+   document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById('resendVerification').addEventListener('click', async (event) => {
+        event.preventDefault(); // Prevent default link behavior
+        const email = document.getElementById('regUsername').value;
+
+        if (!email) {
+            alert('Please enter your email address.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${config.apiBaseUrl}/resend-verification`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (response.ok) {
+                alert('Verification email resent! Please check your inbox.');
+            } else {
+                const message = await response.text();
+                alert(message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+});
 
 
  

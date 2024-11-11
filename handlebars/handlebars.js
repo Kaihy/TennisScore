@@ -2,7 +2,7 @@ const config = require('./config'); // Require the config.js file
 
 // app.js
 async function fetchData() {
-        const apiUrl = `http://${config.IP.ipAddress}:3000/matches`;
+        const apiUrl = `http://${config.IP.ipAddress}:${config.IP.Port2}/matches`;
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();

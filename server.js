@@ -11,7 +11,7 @@ const cron = require('node-cron');
 const nodemailer = require('nodemailer');
 
 const app = express();
-const port = 3000;
+const port = config.IP.Port2;  // Dynamically use the port value
 
 
 // Configure the PostgreSQL connection using the imported config

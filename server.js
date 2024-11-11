@@ -520,7 +520,48 @@ app.get('/matches/enteredkey', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+///////////////////shared
+app.post('/share-match', async (req, res) => {
+    const { match_id, user_id, username } = req.body;
 
+    try {
+        // Check if the username exists in the users table
+        const user = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+
+        if (user.rows.length > 0) {
+            const shared_user_id = user.rows[0].id;
+
+            // Check if a record already exists with the same match_id and shared_user_id
+            const existingShare = await pool.query(
+                'SELECT * FROM shared WHERE match_id = $1 AND shared_user_id = $2',
+                [match_id, shared_user_id]
+            );
+
+            if (existingShare.rows.length > 0) {
+                // If a record exists, do not insert a new one
+                return res.json({ success: false, message: 'This match has already been shared with this user.' });
+            }
+
+            // If no existing record, insert the new shared match entry
+            await pool.query(
+                'INSERT INTO shared (match_id, user_id, shared_user_id) VALUES ($1, $2, $3)',
+                [match_id, user_id, shared_user_id]
+            );
+
+            res.json({ success: true, message: 'Match shared successfully.' });
+        } else {
+            res.json({ success: false, message: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Error sharing match:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+
+
+
+///////////////////shared ENDE
 
 
 

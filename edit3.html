@@ -169,6 +169,28 @@
 <!-- Start Scanner Button -->
 <button onclick="openCameraModal()" class="generateButton">Start QR Code Scanner</button>
 
+<!-- Shared -->
+<!-- Share Button -->
+<div class="share-button-container">
+<button id="shareButton" onclick="openShareModal()">Share Match</button>
+</div>
+<!-- Share Modal -->
+<div id="shareModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closeShareModal()">&times;</span>
+        <h3>Share Match</h3>
+        <input type="username" id="usernameInput" placeholder="Enter recipient's email" required>
+        <button onclick="shareMatch()">Share</button>
+        <div id="shareMessage"></div>
+    </div>
+</div>
+
+
+
+<!-- Shared Ende -->
+
+
+
 <script>
 // Global configuration object
 const config = {
@@ -800,6 +822,70 @@ function setInfoText() {
 setInfoText();
 
 /// Info Icon Ende///
+
+
+
+////////////shared
+// Function to open the share modal
+function openShareModal() {
+    document.getElementById('shareModal').style.display = 'block';
+}
+
+// Function to close the share modal
+function closeShareModal() {
+    document.getElementById('shareModal').style.display = 'none';
+}
+
+// Function to validate email and share match
+async function shareMatch() {
+    const username = document.getElementById('usernameInput').value;
+    const messageDiv = document.getElementById('shareMessage');
+    
+    // Simple email validation
+    const usernameRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!usernameRegex.test(username)) {
+        messageDiv.innerText = 'Please enter a valid email address';
+        return;
+    }
+
+   // Backend API call to check email and save shared match
+try {
+    const response = await fetch(`${config.apiBaseUrl}/share-match`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            match_id: Idextracted,  // Pass the selected match ID
+            user_id: user_id,       // ID of the user sharing the match
+            username: username      // Recipient email
+        })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        messageDiv.innerText = 'Match successfully shared!';
+    } else {
+        // Display specific message based on backend response
+        if (result.message === 'This match has already been shared with this user.') {
+            messageDiv.innerText = 'This match has already been shared with this user.';
+        } else if (result.message === 'User not found') {
+            messageDiv.innerText = 'Email not found. Please try another.';
+        } else {
+            messageDiv.innerText = 'An error occurred. Please try again.';
+        }
+    }
+} catch (error) {
+    console.error('Error sharing match:', error);
+    messageDiv.innerText = 'An error occurred. Please try again.';
+}
+}
+
+
+///////////////shared Ende
+
+
+
 
 async function updateDatabase() {
     const spieler1 = document.getElementById('spieler1').innerText;

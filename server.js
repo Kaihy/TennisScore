@@ -21,8 +21,8 @@ const pool = new Pool(dbConfig);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 /////////////
+
 
 
 
@@ -558,10 +558,20 @@ app.post('/share-match', async (req, res) => {
     }
 });
 
-
-
-
 ///////////////////shared ENDE
+ ////////////shared view
+// Endpoint to fetch shared matches
+app.get('/shared', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM shared');
+        res.status(200).json(result.rows);
+    } catch (err) {
+        console.error('Error fetching shared data:', err);
+        res.status(500).json({ error: 'An error occurred while fetching shared data' });
+    }
+});
+
+ ///////////shared view Ende
 
 
 

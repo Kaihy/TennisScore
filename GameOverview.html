@@ -3,65 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spielübersicht aller Spiele</title>
+    <title>Shared Games</title>
     <link rel="stylesheet" href="css/GameOverviewStyles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"></script>
-    <script defer src="/handlebars/handlebars.js"></script>
-    <script src="/config.js"></script> <!-- Konfigurationsdatei -->
+    <script src="/config.js"></script> <!-- Configuration file -->
     <script>
         let allMatches = [];
 
+        async function fetchSharedData() {
+            try {
+                const response = await fetch(`${config.apiBaseUrl}/shared`);
+                const sharedData = await response.json();
+                return sharedData;
+            } catch (error) {
+                console.error('Error fetching shared data:', error);
+                return [];
+            }
+        }
+
         async function fetchAndUpdateMatches() {
             try {
-                const response = await fetch(`${config.apiBaseUrl}/matches/`); // Replace with your API endpoint
+                const response = await fetch(`${config.apiBaseUrl}/matches/`);
                 const data = await response.json();
-                allMatches = data; // Store all matches globally
-                updateMatches();
+                allMatches = data;
+                const sharedData = await fetchSharedData();
+                updateMatches(sharedData);
             } catch (error) {
                 console.error('Error fetching match data:', error);
             }
         }
 
-        function updateMatches() {
-    const filters = getFilters();
-    const userId = localStorage.getItem('userId');
-    console.log('Logged in user ID:', userId);
+        function updateMatches(sharedData) {
+            const filters = getFilters();
+            const userId = localStorage.getItem('userId');
+            const numericUserId = parseInt(userId, 10);
 
-    // If userId is a string, ensure it's converted to a number for comparison, assuming match.user_id is a number.
-    const numericUserId = parseInt(userId, 10);
+            const userSharedMatches = sharedData
+                .filter(shared => shared.shared_user_id === numericUserId)
+                .map(shared => shared.match_id);
 
+            const filteredData = allMatches.filter(match => {
+                if (match.deleteflag !== 0 || (!userSharedMatches.includes(match.id) && match.user_id !== numericUserId)) {
+                    return false;
+                }
 
-    const filteredData = allMatches.filter(match => {
-        // Check deleteflag condition
-        if (match.deleteflag !== 0) {
-            return false;
+                const courtNumberMatch = !filters.courtnumber || match.courtnumber.toString() === filters.courtnumber;
+                const spielklasseMatch = !filters.spielklasse || match.spielklasse === filters.spielklasse;
+                const altersklasseMatch = !filters.altersklasse || match.altersklasse === filters.altersklasse;
+                const statusMatch = !filters.status || match.spielstatus === filters.status;
+
+                return courtNumberMatch && spielklasseMatch && altersklasseMatch && statusMatch;
+            });
+
+            filteredData.sort((a, b) => a.id - b.id);
+
+            const matchesContainer = document.getElementById('matches-container');
+            const source = document.getElementById('matches-template').innerHTML;
+            const template = Handlebars.compile(source);
+            const html = template({ matches: filteredData, numericUserId });
+            matchesContainer.innerHTML = html;
         }
-        
-// Check if the user_id matches the logged-in user's ID
-if (match.user_id !== numericUserId) {
-            return false;
-        }
-
-        // Apply filters
-        const courtNumberMatch = !filters.courtnumber || match.courtnumber.toString() === filters.courtnumber;
-        const spielklasseMatch = !filters.spielklasse || match.spielklasse === filters.spielklasse;
-        const altersklasseMatch = !filters.altersklasse || match.altersklasse === filters.altersklasse;
-        const statusMatch = !filters.status || match.spielstatus === filters.status;
-
-        // Return true if all filter conditions match
-        return courtNumberMatch && spielklasseMatch && altersklasseMatch && statusMatch;
-    });
-
-    // Sort by ID in ascending order
-    filteredData.sort((a, b) => a.id - b.id);
-
-    // Update the UI with filtered and sorted data
-    const matchesContainer = document.getElementById('matches-container');
-    const source = document.getElementById('matches-template').innerHTML;
-    const template = Handlebars.compile(source);
-    const html = template({ matches: filteredData });
-    matchesContainer.innerHTML = html;
-}
 
         function getFilters() {
             return {
@@ -73,7 +74,6 @@ if (match.user_id !== numericUserId) {
         }
 
         function applyFilters() {
-            console.log('Filters applied:', getFilters());
             updateMatches();
         }
 
@@ -100,15 +100,9 @@ if (match.user_id !== numericUserId) {
             });
         }
 
-        window.onload = function() {
-            fetchAndUpdateMatches();
-            fetchInitialFilters();
-            setInterval(fetchAndUpdateMatches, 5000);
-        };
-
         async function fetchInitialFilters() {
             try {
-                const response = await fetch(`${config.apiBaseUrl}/matches/`); // Replace with your API endpoint
+                const response = await fetch(`${config.apiBaseUrl}/matches/`);
                 const data = await response.json();
                 populateFilters(data);
             } catch (error) {
@@ -116,38 +110,45 @@ if (match.user_id !== numericUserId) {
             }
         }
 
- // Registering the 'eq' helper in Handlebars
- Handlebars.registerHelper('eq', function(a, b) {
+        function playerEditButton(id) {
+            window.location.href = `${config.baseUrl}/edit4.html?id=${id}`;
+        }
+
+        window.onload = function() {
+            fetchAndUpdateMatches();
+            fetchInitialFilters();
+            setInterval(fetchAndUpdateMatches, 5000);
+        };
+
+        // Register Handlebars helpers
+        Handlebars.registerHelper('eq', function(a, b) {
             return a === b;
         });
-
-        // Registering the 'trophyCheck' helper in Handlebars
-        Handlebars.registerHelper('trophyCheck', function(winnervalue) {
-            return winnervalue === '1';
+        Handlebars.registerHelper('ne', function(a, b) {
+            return a !== b;
         });
-
     </script>
 </head>
 <body>
-  <!---Burger Menu-->
-  <div class="burger-menu">
-    <div class="burger-icon" onclick="toggleBurgerMenu()">
-        <div class="line"></div>
-        <div class="line"></div>
-        <div class="line"></div>
+    <!-- Burger Menu -->
+    <div class="burger-menu">
+        <div class="burger-icon" onclick="toggleBurgerMenu()">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+        <nav class="menu">
+            <ul>
+                <li onclick="IndexHtmlUrl()">Hauptseite</li>
+                <li onclick="UserLoginHtmlUrl()">Logout</li>
+            </ul>
+        </nav>
     </div>
-    <nav class="menu">
-        <ul>
-            <li onclick="IndexHtmlUrl()">Hauptseite</a></li>
-            <li onclick="UserLoginHtmlUrl()">Logout</a></li>
-        </ul>
-    </nav>
-</div>
-<!---Burger Menu Ende-->
-    <img src="/Images/Tennis_CourtBlue2.webp" alt="Description of the image">
-    <h1>Spielübersicht</h1>
+
+ <!---Burger Menu Ende-->
+ <img src="/Images/Tennis_CourtBlue2.webp" alt="Description of the image">
+ <h1>Gesamte Spiele</h1>
    
-    
     <div class="filter-container">
         <label for="filter-courtnumber">Courtnumber:</label>
         <select id="filter-courtnumber" onchange="applyFilters()"></select>
@@ -161,21 +162,21 @@ if (match.user_id !== numericUserId) {
         <label for="filter-status">Status:</label>
         <select id="filter-status" onchange="applyFilters()"></select>
     </div>
-    
+
     <div id="matches-container"></div>
 
     <script id="matches-template" type="text/x-handlebars-template">
         {{#each matches}}
-        <div class="CourtBox">    
+        <div class="CourtBox {{#if (ne user_id ../numericUserId)}}blue-bg{{/if}}">  
             <div class="CourtData">
                 <span class="Courtnumber">Courtnumber: {{courtnumber}}</span>
                 <table class="CourtTable">
                     <thead>
                         <tr class="DisplayGameTitles">
-                            <th colspan="1">Spielername</th>
-                            <th colspan="1">Set</th>
+                            <th>Spielername</th>
+                            <th>Set</th>
                             <th colspan="3">Games</th>
-                            <th colspan="1">Points</th>
+                            <th>Points</th>
                         </tr>
                         <tr class="DisplayGameNumbers">
                             <th></th>
@@ -183,13 +184,13 @@ if (match.user_id !== numericUserId) {
                             <th>3</th>
                             <th>2</th>
                             <th>1</th>
-                            <th>{{#if (eq tiebreak_mode 1)}}<p>Tiebreak</p> {{/if}}</th>
+                            <th>{{#if (eq tiebreak_mode 1)}}<p>Tiebreak</p>{{/if}}</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="spielerfeld">{{spieler1}} </td>
+                            <td class="spielerfeld">{{spieler1}}</td>
                             <td class="spielwerte">{{spieler1_satz}}</td>
                             <td class="spielwerte">{{spieler1_spiel3}}</td>
                             <td class="spielwerte">{{spieler1_spiel2}}</td>
@@ -201,13 +202,13 @@ if (match.user_id !== numericUserId) {
                                     {{spieler1_punkte}}
                                 {{/if}}
                             </td>
-                            <td class="serveImage"> {{#if (eq serve1 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                            <td class="serveImage">{{#if (eq serve1 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
                         </tr>
                         <tr>
                             <td class="spielerverein">{{spieler1_verein}}</td>
                         </tr>
                         <tr>
-                            <td class="spielerfeld">{{spieler2}} </td>
+                            <td class="spielerfeld">{{spieler2}}</td>
                             <td class="spielwerte">{{spieler2_satz}}</td>
                             <td class="spielwerte">{{spieler2_spiel3}}</td>
                             <td class="spielwerte">{{spieler2_spiel2}}</td>
@@ -219,7 +220,7 @@ if (match.user_id !== numericUserId) {
                                     {{spieler2_punkte}}
                                 {{/if}}
                             </td>
-                            <td class="serveImage"> {{#if (eq serve2 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
+                            <td class="serveImage">{{#if (eq serve2 1)}}<img src="/Images/tennisball.webp">{{/if}}</td>
                         </tr>
                         <tr>
                             <td class="spielerverein">{{spieler2_verein}}</td>
@@ -241,37 +242,23 @@ if (match.user_id !== numericUserId) {
     </script>
 
     <script>
-// Global configuration object
-const config = {
-             baseUrl: `http://${IP.ipAddress}:${IP.Port1}`,
+        const config = {
+            baseUrl: `http://${IP.ipAddress}:${IP.Port1}`,
             apiBaseUrl: `http://${IP.ipAddress}:${IP.Port2}`
         };
 
-//// Burger Menu///
-function toggleBurgerMenu() {
-    const menu = document.querySelector('.menu');
-    menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
-}
-//// Burger Menu Ende///
+        function toggleBurgerMenu() {
+            const menu = document.querySelector('.menu');
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+        }
 
-
-function UserLoginHtmlUrl() {
+        function UserLoginHtmlUrl() {
             window.location.href = `${config.baseUrl}/login.html`;
         }
-       // Function to redirect to the index page after login
-       function IndexHtmlUrl() {
+
+        function IndexHtmlUrl() {
             window.location.href = `${config.baseUrl}/index.html`;
         }
-
-        function playerEditButton(id) {   
-            window.location.href = `${config.baseUrl}/edit3.html?id=${id}`;
-            console.log(id);
-        }
-
-        // Registering the 'eq' helper in Handlebars
-        Handlebars.registerHelper('eq', function(a, b) {
-            return a === b;
-        });
     </script>
 </body>
 </html>

@@ -37,15 +37,18 @@
             const filters = getFilters();
             const userId = localStorage.getItem('userId');
             const numericUserId = parseInt(userId, 10);
+            console.log('Loged in User:'+ numericUserId);
 
             const userSharedMatches = sharedData
                 .filter(shared => shared.shared_user_id === numericUserId)
-                .map(shared => shared.match_id);
+                .map(shared => shared.game_id);
 
             const filteredData = allMatches.filter(match => {
-                if (match.deleteflag !== 0 || (!userSharedMatches.includes(match.id) && match.user_id !== numericUserId)) {
-                    return false;
-                }
+                 // Exclude matches where deleteflag is 1
+        if (match.deleteflag === 1 || 
+            (!userSharedMatches.includes(match.game_id) && match.user_id !== numericUserId)) {
+            return false;
+        }
 
                 const courtNumberMatch = !filters.courtnumber || match.courtnumber.toString() === filters.courtnumber;
                 const spielklasseMatch = !filters.spielklasse || match.spielklasse === filters.spielklasse;
@@ -55,7 +58,7 @@
                 return courtNumberMatch && spielklasseMatch && altersklasseMatch && statusMatch;
             });
 
-            filteredData.sort((a, b) => a.id - b.id);
+            filteredData.sort((a, b) => a.game_id-b.game_id);
 
             const matchesContainer = document.getElementById('matches-container');
             const source = document.getElementById('matches-template').innerHTML;
@@ -110,8 +113,8 @@
             }
         }
 
-        function playerEditButton(id) {
-            window.location.href = `${config.baseUrl}/edit4.html?id=${id}`;
+        function playerEditButton(game_id) {
+            window.location.href = `${config.baseUrl}/edit4.html?game_id=${game_id}`;
         }
 
         window.onload = function() {
@@ -146,8 +149,8 @@
     </div>
 
  <!---Burger Menu Ende-->
- <img src="/Images/Tennis_CourtBlue2.webp" alt="Description of the image">
- <h1>Gesamte Spiele</h1>
+ <img src="/Images/court_grass.webp" class="Image" alt="Description of the image">
+ <h1>Spielübersicht</h1>
    
     <div class="filter-container">
         <label for="filter-courtnumber">Courtnumber:</label>
@@ -235,7 +238,7 @@
                     <span>Status: {{spielstatus}}</span>
                     <span>ID: {{id}}</span>
                 </div>
-                <button type="button" onclick="playerEditButton('{{id}}')" class="signupbtn">Spielpunkte editieren</button>
+                <button type="button" onclick="playerEditButton('{{game_id}}')" class="signupbtn">Spielpunkte editieren</button>
             </div>
         </div>
         {{/each}}

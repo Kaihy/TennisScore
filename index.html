@@ -27,6 +27,28 @@
         </div>
 <!---Burger Menu Ende-->
 
+<!---User Icon-->
+<!---User Icon-->
+<div class="user-icon-menu">
+    <div class="user-icon" onclick="toggleDropdown()">
+      <!-- User Icon (SVG) -->
+      <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 0 20 20" width="30px" fill="#e2fd79">
+        <path d="M0 0h24v24H0z" fill="none"/>
+        <path d="M12 12c2.7 0 5.5 1.3 7.4 3.7.6.8.6 1.9 0 2.7-.5.7-1.3 1.1-2.1 1.1H6.8c-.8 0-1.6-.4-2.1-1.1-.6-.8-.6-1.9 0-2.7C6.5 13.3 9.3 12 12 12zm0-2c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"/>
+      </svg>
+    </div>
+    <nav class="dropdown-menu">
+      <ul>
+        <li><a href="" onclick="deleteUserData()">Konto löschen</a></li>
+       
+      </ul>
+    </nav>
+  </div>
+  <!---User Icon End-->
+  
+  <!---User Icon End-->
+  
+
 
 
     <script>
@@ -42,6 +64,19 @@ function toggleBurgerMenu() {
     menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
 }
 //// Burger Menu Ende///
+
+
+
+//// User ICon  Menu///
+function toggleDropdown() {
+  const menu = document.querySelector(".dropdown-menu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+//// User Icon Ende///
+
+
+
+
 function UserLoginHtmlUrl() {
             window.location.href = `${config.baseUrl}/login.html`;
         }
@@ -59,14 +94,56 @@ function UserLoginHtmlUrl() {
             window.location.href = `${config.baseUrl}/CreateGame.html`;
         };
 
+
         const userId = localStorage.getItem('userId');
         console.log('Logged in user ID:', userId);
+
+///Delete User Data///
+        async function deleteUserData() {
+    const userId = localStorage.getItem('userId');
+
+    if (!userId) {
+        alert('No user is logged in.');
+        return;
+    }
+
+    const confirmed = confirm('Are you sure you want to delete all your data? This action cannot be undone.');
+    if (!confirmed) return;
+
+    try {
+        const url = `${config.apiBaseUrl}/delete-user-data/${userId}`;
+        console.log(`Request URL: ${url}`);
+
+        const response = await fetch(url, { method: 'DELETE' });
+
+        if (!response.ok) {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                alert(`Failed to delete data: ${errorData.error}`);
+            } else {
+                const errorText = await response.text();
+                console.error(`Non-JSON error response: ${errorText}`);
+                alert('Failed to delete data: An unexpected error occurred.');
+            }
+            return;
+        }
+
+        alert('Your data has been deleted successfully.');
+        localStorage.removeItem('userId'); // Optionally clear userId from localStorage
+        window.location.href = `${config.baseUrl}/login.html`; // Redirect to login page
+    } catch (error) {
+        console.error('Error deleting user data:', error);
+        alert('An error occurred while deleting your data.');
+    }
+}
+
+
     </script>
 
 <button type="button" onclick="openOverviewURL()" class="signupbtn">Spielübersicht</button>
 <button type="button" onclick="DeleteOverviewURL()" class="signupbtn">Deleted Games</button>
 <button type="button" onclick="openViewUrl()" class="editGame">Neues Spiel anlegen</button>
-
 
 
 

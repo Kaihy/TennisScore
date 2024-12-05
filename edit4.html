@@ -120,7 +120,7 @@
                         <td><button id="ButtonWin" onclick="updateWin('spieler2')" class="ButtonWin">Player 2 Win</button></td>
                     </tr>
                     <tr>
-                        <td><button id="ButtonDelete" onclick="undoDelete('{{id}}')" class="ButtonDelete">Spiel löschen</button></td>
+                        <td><button id="ButtonDelete" onclick="undoDelete('{{game_id}}')" class="ButtonDelete">Spiel löschen</button></td>
                     </tr>
 
                     <div class="center-container"><button type="button" onclick="openViewUrl()" class="Backbtn">Zurück zur Übersicht</button></div>
@@ -205,6 +205,9 @@ Handlebars.registerHelper('eq', function (a, b) {
     return a === b;
 });
 
+
+
+
 // Open Link to Main Page
 function openViewUrl() {
     window.location.href = `${config.baseUrl}/GameOverview.html`;
@@ -231,32 +234,31 @@ if (idIndex !== -1) {
 let user_id, courtnumber;
 
 // JavaScript to fetch and display match
-// JavaScript to fetch and display match
 // JavaScript to fetch match and shared user_id data
-function fetchData(id) {
-    // Fetch match data and shared user_id data in parallel
+function fetchData(game_id) {
+    // Fetch match data and shared user data in parallel
     Promise.all([
         fetch(`${config.apiBaseUrl}/matches/`).then(response => response.json()),
         fetch(`${config.apiBaseUrl}/shared`).then(response => response.json())
     ])
     .then(([matchData, sharedData]) => {
-        // Find the match by id in the match data
-        const match = matchData.find(item => item.id == Idextracted);
+        // Find the match by ID in the match data
+        const match = matchData.find(item => item.game_id == game_id);
         if (!match) {
-            console.error('Match with specified id not found.');
+            console.error(`Match with ID ${game_id} not found.`);
             return;
         }
 
-        // Find the shared user data by id in the shared data
-        const sharedMatch = sharedData.find(item => item.id == Idextracted);
-        const sharedUserId = sharedMatch ? sharedMatch.user_id : null;
+        // Find the shared user data by game ID in the shared data
+        const sharedMatch = sharedData.find(item => item.game_id == game_id);
+        const sharedUserId = sharedMatch ? sharedMatch.shared_user_id : null;
 
         // Retrieve the logged-in user ID from localStorage
         const userId = localStorage.getItem('userId');
-        console.log('Logged in user ID:', userId);
-        console.log('Shared match user_id:', sharedUserId);
+        console.log('Logged-in User ID:', userId);
+        console.log('Shared Match User ID:', sharedUserId);
 
-        // Update the tiebreak_mode and winnervalue from fetched data
+        // Update the tiebreak_mode and winnervalue from fetched match data
         tiebreak_mode = match.tiebreak_mode;
         winnervalue = match.winnervalue;
 
@@ -264,29 +266,47 @@ function fetchData(id) {
         user_id = match.user_id;
         courtnumber = match.courtnumber;
 
-        // Compile and display the match data using Handlebars
+        // Prepare data for the Handlebars template
+        const templateData = {
+            ...match,
+            shared_user_id: sharedUserId // Add shared user ID for template rendering
+        };
+
+        // Compile and render the Handlebars template
         const source = document.getElementById('matches-template').innerHTML;
         const template = Handlebars.compile(source);
-        const html = template(match);
+        const html = template(templateData);
         document.getElementById('matches-container').innerHTML = html;
 
-        // Enable or disable the share button based on userId and sharedUserId
+// Display shared information icon
+        const sharedInfo = `
+           <div id="container">
+    <div class="shared-info">
+        <!-- Conditionally show the icon -->
+        ${sharedUserId ? '<img src="Images/share.png" alt="Shared Icon" class="shared-icon">' : ''}
+        <p>Geteilt von Benutzer ID: ${sharedUserId || 'Not shared'}</p>
+    </div>
+</div>
+        `;
+
+        document.getElementById('matches-container').insertAdjacentHTML('beforeend', sharedInfo);
+
+        // Enable or disable the share and delete buttons based on user permissions
         const shareButton = document.getElementById('shareButton');
         const deleteButton = document.getElementById('ButtonDelete');
-        if (sharedUserId == null || sharedUserId === userId) {
+        if (!sharedUserId || userId === match.user_id.toString()) {
             shareButton.disabled = false;
-            shareButton.classList.remove('disabled-button'); // Optional styling for enabled button
+            shareButton.classList.remove('disabled-button'); // Optional: Add styling for enabled button
             deleteButton.disabled = false;
-            deleteButton.classList.remove('disabled-button'); // Optional styling for enabled button
+            deleteButton.classList.remove('disabled-button'); // Optional: Add styling for enabled button
+
         } else {
             shareButton.disabled = true;
-            shareButton.classList.add('disabled-button'); // Optional styling for disabled button
+            shareButton.classList.add('disabled-button'); // Optional: Add styling for disabled button
             deleteButton.disabled = true;
-            deleteButton.classList.add('disabled-button'); // Optional styling for disabled button
-            
+            deleteButton.classList.add('disabled-button'); // Optional: Add styling for disabled button
         }
-
-        // Set the checkbox and tiebreak header based on the fetched tiebreak_mode
+// Set the checkbox and tiebreak header based on the fetched tiebreak_mode
         if (tiebreak_mode === 1) {
             document.getElementById('tiebreak-toggle').checked = true;
             document.getElementById('tiebreak-header').innerText = 'Tiebreak';
@@ -599,13 +619,20 @@ function generateKey() {
     // Convert to string explicitly
     generated_key = String(generated_key);
 }
-
+//////////////
 async function updateGeneratedKey() {
     if (!Idextracted) {
         console.error('No ID extracted from URL.');
         return;
     }
 
+    // Ensure the generated key is available and properly formatted
+    if (!generated_key || generated_key.length !== 7) {
+        console.error('Generated key is invalid.');
+        return;
+    }
+
+    // Send a PATCH request to update the `tennis_match` table
     fetch(`${config.apiBaseUrl}/generatedkey/${Idextracted}`, {
         method: 'PATCH',
         headers: {
@@ -613,15 +640,26 @@ async function updateGeneratedKey() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            generated_key: String(generated_key) // Ensure the key is a string
+            game_id: String(Idextracted), // Explicitly cast to string
+            generated_key: generated_key // Update the generated_key field
         })
-    }).then(response => response.json()).then(() => {
-        console.log('Generated key updated successfully in the database');
-    }).catch(error => {
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Failed to update generated key in the database.');
+        }
+    })
+    .then(data => {
+        console.log('Generated key updated successfully:', data);
+    })
+    .catch(error => {
         console.error('Error updating generated key:', error);
     });
 }
 
+/////////////
 document.getElementById('generateButton').addEventListener('click', () => {
     let userChoice = confirm("Willst du einen neuen Key kreieren? Alle aktuellen Center Court Verbindungen gehen dabei verloren?");
     if (userChoice) {
@@ -911,7 +949,7 @@ try {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            match_id: Idextracted,  // Pass the selected match ID
+            game_id: Idextracted,  // Pass the selected match ID
             user_id: user_id,       // ID of the user sharing the match
             username: username      // Recipient email
         })
@@ -966,6 +1004,7 @@ async function updateDatabase() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+            game_id: Idextracted, // Pass game_id explicitly
             spieler1: spieler1,
             spieler2: spieler2,
             spieler1_Satz: spieler1_Satz,
@@ -986,7 +1025,9 @@ async function updateDatabase() {
             winnervalue: winnervalue
         })
     }).then(response => response.json()).then(() => {
-        console.log('Database updated successfully');
+        console.log('Database updated successfully', Idextracted);
+        console.log('Extracted game_id:', Idextracted, 'Type:', typeof Idextracted);
+
     }).catch(error => {
         console.error('Error updating database:', error);
     });

@@ -106,40 +106,45 @@
             window.location.href = `${config.baseUrl}/GameOverview.html`;
         }
     
+///////////////
+document.getElementById('sheetdb-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    var form = document.getElementById('sheetdb-form');
+    var formData = new FormData(form);
+    
+    // Convert form data to JSON object
+    var data = {};
+    formData.forEach((value, key) => { data[key] = value });
+    
+    // Generate a UUID for the game
+    data.game_id = crypto.randomUUID(); // Generates a unique identifier
+    console.log('Generated Game ID:', data.game_id);
+    
+    // Retrieve userId from local storage
+    var userId = localStorage.getItem('userId');
+    if (userId) {
+        data.user_id = userId; // Add user_id to the data object
+        console.log('User ID:', userId);
+    } else {
+        console.warn('User ID not found in local storage.');
+    }
 
-        document.getElementById('sheetdb-form').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            var form = document.getElementById('sheetdb-form');
-            var formData = new FormData(form);
-            
-            // Convert form data to JSON object
-            var data = {};
-            formData.forEach((value, key) => { data[key] = value });
-
-            // Retrieve userId from local storage
-            var userId = localStorage.getItem('userId');
-            if (userId) {
-                data.user_id = userId; // Add user_id to the data object
-                console.log('User ID:', userId);
-            } else {
-                console.warn('User ID not found in local storage.');
-            }
-   
-            fetch(`${config.apiBaseUrl}/add`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            }).then(response => response.json()).then((response) => {
-                console.log(response);
-                openViewUrl();
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        });
+    // Send the data to the server
+    fetch(`${config.apiBaseUrl}/add`, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(response => response.json()).then((response) => {
+        console.log(response);
+        openViewUrl();
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+});
     </script>
 </body>
 </html>

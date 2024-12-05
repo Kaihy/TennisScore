@@ -9,6 +9,8 @@ const config = require('./config');
 const { v4: uuidv4 } = require('uuid'); // Import uuid for generating unique keys
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const port = config.IP.Port2;  // Dynamically use the port value
@@ -36,13 +38,18 @@ async function sendVerificationEmail(email, verificationCode) {
             pass: emailConfig.pass,  // Passwort aus der config.js
         },
     });
-
     const verificationLink = `http://${config.IP.ipAddress}:${port}/verify-email?code=${verificationCode}`;
+    const emailVerificationPath = path.join(__dirname, 'emailverification.html');
+    const emailVerificationHTML = fs.readFileSync(emailVerificationPath, 'utf8');
+    
+    // Replace the placeholder with the actual verification link
+    const htmlContent = emailVerificationHTML.replace('{{verificationLink}}', verificationLink);
+    
     const mailOptions = {
         from: emailConfig.user,
         to: email,
         subject: 'Email Verification',
-        html: `<p>Please verify your email by clicking on the link below:</p><a href="${verificationLink}">Verify Email</a>`,
+        html: htmlContent,
     };
 
     await transporter.sendMail(mailOptions);
@@ -78,7 +85,7 @@ app.post('/register', async (req, res) => {
         // Send verification email
         await sendVerificationEmail(username, verificationCode);
 
-        res.send('Registration successful, please verify your email');
+        res.send('Registrierung erfolgreich, bitte bestätige deine E-Mail-Adresse.');
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
@@ -95,9 +102,9 @@ app.get('/verify-email', async (req, res) => {
         );
 
         if (result.rowCount > 0) {
-            res.status(200).send('Email verified successfully');
+            res.status(200).send('E-Mail erfolgreich bestätigt.');
         } else {
-            res.status(400).send('Invalid or expired verification link');
+            res.status(400).send('Ungültiger oder abgelaufener Bestätigungslink.');
         }
     } catch (err) {
         console.error(err);
@@ -168,14 +175,14 @@ app.post('/login', async (req, res) => {
             
             // Überprüfe, ob die E-Mail-Adresse verifiziert ist
             if (user.isverified !== 1) {
-                return res.status(403).send('Please verify your email before logging in.');
+                return res.status(403).send('Bitte bestätige deine E-Mail, bevor du dich anmeldest.');
             }
 
             // Überprüfe das Passwort
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
                 // Erfolgreiches Login: Rückgabe der Benutzer-ID
-                res.json({ message: 'Login successful', user_id: user.id });
+                res.json({ message: 'Login erfolgreich', user_id: user.id });
             } else {
                 // Passwort stimmt nicht überein
                 res.status(401).send('Invalid credentials');
@@ -217,7 +224,7 @@ app.post('/renew-password', async (req, res) => {
         const resetLink = `http://${config.IP.ipAddress}:${port}/reset-password?token=${resetToken}`;
         await sendPasswordResetEmail(username, resetLink);
 
-        res.send('A verification link has been sent to your email. Please confirm to reset your password.');
+        res.send('Ein Bestätigungslink wurde an deine E-Mail-Adresse gesendet. Bitte bestätige, um dein Passwort zurückzusetzen.');
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
@@ -234,11 +241,18 @@ async function sendPasswordResetEmail(email, resetLink) {
         },
     });
 
+    // Load the email template
+    const emailTemplatePath = path.join(__dirname, 'emailrenewpassword.html');
+    let emailHtml = fs.readFileSync(emailTemplatePath, 'utf8');
+
+    // Replace placeholder with the reset link
+    emailHtml = emailHtml.replace('{{resetLink}}', resetLink);
+
     const mailOptions = {
         from: emailConfig.user,
         to: email,
         subject: 'Password Reset Request',
-        html: `<p>Please reset your password by clicking the link below. This link is valid for 15 minutes:</p><a href="${resetLink}">Reset Password</a>`
+        html: emailHtml,
     };
 
     await transporter.sendMail(mailOptions);
@@ -256,11 +270,11 @@ app.get('/reset-password', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(400).send('Invalid or expired token');
+            return res.status(400).send('Ungültiger oder abgelaufener Token');
         }
 
-        // Token is valid, render password reset form or redirect to it
-        res.send('<form method="POST" action="/confirm-reset"><input type="hidden" name="token" value="'+ token +'"/><input type="password" name="newPassword" placeholder="New Password"/><button type="submit">Reset Password</button></form>');
+        // Token is valid, serve the password reset HTML file
+        res.sendFile(path.join(__dirname, 'password-reset.html'));
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
@@ -279,7 +293,7 @@ app.post('/confirm-reset', async (req, res) => {
         );
 
         if (result.rows.length === 0) {
-            return res.status(400).send('Invalid or expired token');
+            return res.status(400).send('Ungültiges oder abgelaufenes Token.');
         }
 
         // Hash the new password
@@ -291,7 +305,7 @@ app.post('/confirm-reset', async (req, res) => {
             [hashedPassword, token]
         );
 
-        res.send('Your password has been updated successfully');
+        res.send('Dein Passwort wurde erfolgreich aktualisiert.');
     } catch (err) {
         console.error(err);
         res.status(500).send('Server error');
@@ -319,12 +333,46 @@ app.post('/add', async (req, res) => {
         user_id
     } = req.body;
 
+    const game_id = uuidv4(); // Generate a unique game_id
+
     try {
         await pool.query(
-            'INSERT INTO tennis_match (spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)',
-            [spieler1, spieler2, courtnumber, spielklasse, altersklasse, spieler1_verein, spieler2_verein, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue, user_id]
+            `INSERT INTO tennis_match (
+                game_id, 
+                spieler1, 
+                spieler2, 
+                courtnumber, 
+                spielklasse, 
+                altersklasse, 
+                spieler1_verein, 
+                spieler2_verein, 
+                spielstatus, 
+                serve1, 
+                serve2, 
+                tiebreak_mode, 
+                deleteflag, 
+                winnervalue, 
+                user_id
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+            [
+                game_id, 
+                spieler1, 
+                spieler2, 
+                courtnumber, 
+                spielklasse, 
+                altersklasse, 
+                spieler1_verein, 
+                spieler2_verein, 
+                spielstatus, 
+                serve1, 
+                serve2, 
+                tiebreak_mode, 
+                deleteflag, 
+                winnervalue, 
+                user_id
+            ]
         );
-        res.status(201).json({ message: 'Match added successfully' });
+        res.status(201).json({ message: 'Match added successfully', game_id });
     } catch (err) {
         console.error('Error adding match:', err);
         res.status(500).json({ error: 'An error occurred while adding the match' });
@@ -344,16 +392,16 @@ app.get('/matches', async (req, res) => {
 
 // Endpoint to fetch matches filtered by id
 app.get('/matches/filter', async (req, res) => {
-    const { id } = req.query;  // Get id from query parameters
+    const { game_id } = req.query;  // Get id from query parameters
 
     // Check if external_id is provided
-    if (!id) {
+    if (!game_id || typeof game_id !== 'string') {
         return res.status(400).json({ error: 'id query parameter is required' });
     }
 
     try {
         // Query to fetch matches where external_id matches and deleteflag is 0
-        const result = await pool.query('SELECT * FROM tennis_match WHERE deleteflag = 0 AND id = $1', [id]);
+        const result = await pool.query('SELECT * FROM tennis_match WHERE deleteflag = 0 AND game_id = $1', [game_id]);
         
         // Send back the result
         res.status(200).json({ matches: result.rows });
@@ -365,8 +413,8 @@ app.get('/matches/filter', async (req, res) => {
 
 
 // Endpoint to update match data
-app.patch('/update/:id', async (req, res) => {
-    const { id } = req.params;
+app.patch('/update/:game_id', async (req, res) => {
+    const { game_id } = req.params;
     const {
         spieler1,
         spieler2,
@@ -390,8 +438,8 @@ app.patch('/update/:id', async (req, res) => {
 
     try {
         await pool.query(
-            'UPDATE tennis_match SET spieler1 = $1, spieler2 = $2, spieler1_satz = $3, spieler2_satz = $4, spieler1_spiel = $5, spieler1_spiel2 = $6, spieler1_spiel3 = $7, spieler2_spiel = $8, spieler2_spiel2 = $9, spieler2_spiel3 = $10, spieler1_punkte = $11, spieler2_punkte = $12, spielstatus = $13, serve1 = $14, serve2 = $15, tiebreak_mode = $16, deleteflag = $17, winnervalue = $18 WHERE id = $19',
-            [spieler1, spieler2, spieler1_Satz, spieler2_Satz, spieler1_Spiel, spieler1_Spiel2, spieler1_Spiel3, spieler2_Spiel, spieler2_Spiel2, spieler2_Spiel3, spieler1_Punkte, spieler2_Punkte, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue, id]
+            'UPDATE tennis_match SET spieler1 = $1, spieler2 = $2, spieler1_satz = $3, spieler2_satz = $4, spieler1_spiel = $5, spieler1_spiel2 = $6, spieler1_spiel3 = $7, spieler2_spiel = $8, spieler2_spiel2 = $9, spieler2_spiel3 = $10, spieler1_punkte = $11, spieler2_punkte = $12, spielstatus = $13, serve1 = $14, serve2 = $15, tiebreak_mode = $16, deleteflag = $17, winnervalue = $18 WHERE game_id = $19',
+            [spieler1, spieler2, spieler1_Satz, spieler2_Satz, spieler1_Spiel, spieler1_Spiel2, spieler1_Spiel3, spieler2_Spiel, spieler2_Spiel2, spieler2_Spiel3, spieler1_Punkte, spieler2_Punkte, spielstatus, serve1, serve2, tiebreak_mode, deleteflag, winnervalue, game_id]
         );
         res.status(200).json({ message: 'Match updated successfully' });
     } catch (err) {
@@ -415,18 +463,18 @@ app.patch('/delete/:id', async (req, res) => {
 });
 
 // Endpoint to update Center Court Key
-app.patch('/generatedkey/:id', async (req, res) => {
-    const { id } = req.params;
+app.patch('/generatedkey/:game_id', async (req, res) => {
+    const { game_id } = req.params;
     const {
         generated_key
     } = req.body;
 
     try {
         await pool.query(
-            'UPDATE tennis_match SET generated_key = $1  WHERE id = $2',
-            [generated_key, id]
+            'UPDATE tennis_match SET generated_key = $1  WHERE game_id = $2',
+            [generated_key, game_id]
         );
-        res.status(200).json({ message: 'Match updated successfully' });
+        res.status(200).json({ message: 'Match erfolgreich upgedated' });
     } catch (err) {
         console.error('Error updating match:', err);
         res.status(500).json({ error: 'An error occurred while updating the match' });
@@ -456,15 +504,20 @@ app.post('/display-court/:key', async (req, res) => {
     const { external_id, user_id, courtnumber } = req.body;
 
     try {
-        // Update the court_keys table with the new user_id and courtnumber
+        // Ensure external_id is a string
+        if (typeof external_id !== 'string') {
+            external_id = String(external_id);
+        }
+
+        // Update the court_keys table with the new user_id, courtnumber, and external_id
         const result = await pool.query(
-            'UPDATE court_keys SET user_id = $1, courtnumber = $2, external_id =$3 WHERE key = $4',
+            'UPDATE court_keys SET user_id = $1, courtnumber = $2, external_id = $3 WHERE key = $4',
             [user_id, courtnumber, external_id, key]
         );
 
         // Check if the update was successful (if any rows were updated)
         if (result.rowCount > 0) {
-            res.status(200).json({ message: 'Court information updated successfully' });
+            res.status(200).json({ message: 'Court information erfolgreich aktualisiert' });
         } else {
             res.status(404).json({ message: 'Court key not found' });
         }
@@ -507,7 +560,7 @@ app.get('/matches/enteredkey', async (req, res) => {
     }
 
     try {
-        // SQL query to select matches based on generated_key
+        // Query the database for matches using the provided key
         const result = await pool.query('SELECT * FROM tennis_match WHERE generated_key = $1', [enteredKey]);
 
         if (result.rows.length > 0) {
@@ -522,7 +575,7 @@ app.get('/matches/enteredkey', async (req, res) => {
 });
 ///////////////////shared
 app.post('/share-match', async (req, res) => {
-    const { match_id, user_id, username } = req.body;
+    const { game_id, user_id, username } = req.body;
 
     try {
         // Check if the username exists in the users table
@@ -533,19 +586,19 @@ app.post('/share-match', async (req, res) => {
 
             // Check if a record already exists with the same match_id and shared_user_id
             const existingShare = await pool.query(
-                'SELECT * FROM shared WHERE match_id = $1 AND shared_user_id = $2',
-                [match_id, shared_user_id]
+                'SELECT * FROM shared WHERE game_id = $1 AND shared_user_id = $2',
+                [game_id, shared_user_id]
             );
 
             if (existingShare.rows.length > 0) {
                 // If a record exists, do not insert a new one
-                return res.json({ success: false, message: 'This match has already been shared with this user.' });
+                return res.json({ success: false, message: 'Dieses Spiel wurde bereits mit diesem Benutzer geteilt.' });
             }
 
             // If no existing record, insert the new shared match entry
             await pool.query(
-                'INSERT INTO shared (match_id, user_id, shared_user_id) VALUES ($1, $2, $3)',
-                [match_id, user_id, shared_user_id]
+                'INSERT INTO shared (game_id, user_id, shared_user_id) VALUES ($1, $2, $3)',
+                [game_id, user_id, shared_user_id]
             );
 
             res.json({ success: true, message: 'Match shared successfully.' });
@@ -570,8 +623,31 @@ app.get('/shared', async (req, res) => {
         res.status(500).json({ error: 'An error occurred while fetching shared data' });
     }
 });
-
  ///////////shared view Ende
+ ///////////Delete User Begin
+ app.delete('/delete-user-data/:userId', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        // Delete related data in the correct order to avoid foreign key constraint violations
+        const result1 = await pool.query('DELETE FROM tennis_match WHERE user_id = $1 RETURNING *', [userId]);
+        console.log('Deleted from tennis_match:', result1.rows);
+        
+        const result2 = await pool.query('DELETE FROM shared WHERE user_id = $1 RETURNING *', [userId]);
+        console.log('Deleted from shared:', result2.rows);
+        
+        const result3 = await pool.query('DELETE FROM users WHERE id = $1 RETURNING *', [userId]);
+        console.log('Deleted from users:', result3.rows);
+
+        res.status(200).json({ message: 'User data deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).json({ error: 'Failed to delete user data' });
+    }
+});
+///////////Delete User - End
+
+
 
 
 

@@ -13,10 +13,22 @@
     justify-content: center; /* Center content horizontally */
 }
 
+/* Game container inside fullscreen */
+.fullscreen .game-container {
+    width: 60%; /* Occupies 60% of the screen width */
+    height: 60%; /* Occupies 60% of the screen height */
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; /* Optional styling */
+    border-radius: 12px; /* Optional rounded corners */
+}
+
 /* General body styling */
 body {
     font-family: Verdana, sans-serif;
-    font-weight: 100px;
+    font-weight: 100;
     color: #515050;
     margin: 0;
     padding: 0;
@@ -113,7 +125,7 @@ img {
 }
 
 /* Player's field styling */
-.spielerfeld, .spielwerte,.spielwertePunkte {
+.spielerfeld, .spielwerte, .spielwertePunkte {
     background-color: #ffffff;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     border-radius: 12px;
@@ -121,9 +133,6 @@ img {
     font-size: 4vw;
     text-align: center;
 }
-
-
-
 
 /* Game points styling */
 .spielwertePunkte {
@@ -177,21 +186,35 @@ img {
 /* Input container styling */
 .input-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 2vw;
-    border-radius: 10px;
-    max-width: 400px;
-    margin: 2vw auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        flex-direction: column; /* Stack each filter vertically */
+        align-items: center; /* Center all filters */
+        gap: 10px; /* Space between each filter */
+        padding: 15px;
+        border: 2px solid #ccc; /* Light gray border */
+        border-radius: 30px; /* Rounded corners */
+        background-color: #f9f9f9; /* Light background */
+        width: auto; /* Adjust width as needed */
+        margin: 20px auto; /* Center horizontally on the page */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
 }
 
-.input-container input, .input-container button {
+.input-container input {
     font-size: 1.5vw;
 }
+ .input-container button {
+    display: inline-block;
+            padding: 10px 20px;
+            margin: 20px 0;
+            color: #ffffff;
+            background-color: #027fa9;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+}
 
-/*_____________________________________________________ Media Query for small screens */
+
+/* Media Query for small screens */
 @media screen and (max-width: 900px) {
     /* Image styling */
     img {
@@ -225,4 +248,3 @@ img {
         font-size: 4vw;
     }
 }
-s

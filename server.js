@@ -1,23 +1,40 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const validator = require('validator');
-const { dbConfig, emailConfig } = require('./config');
+//const { dbConfig, emailConfig } = require('./config');
 const config = require('./config');
 const { v4: uuidv4 } = require('uuid'); // Import uuid for generating unique keys
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
 const fs = require('fs');
 const path = require('path');
-
 const app = express();
 const port = config.IP.Port2;  // Dynamically use the port value
 
 
+dbConfig= {
+    user: process.env.DB_USER,       // Replace with your PostgreSQL username
+    host: process.env.DB_HOST,      // Replace with your PostgreSQL host
+    database: process.env.DB_NAME, // Replace with your PostgreSQL database name
+    password: process.env.DB_PASSWORD,      // Replace with your PostgreSQL password
+    port: process.env.DB_PORT,             // Default PostgreSQL port
+  },
+
+  emailConfig= { 
+    user: process.env.EMAIL_USER, 
+    pass: process.env.EMAIL_PASS,
+}
+
+
 // Configure the PostgreSQL connection using the imported config
 const pool = new Pool(dbConfig);
+
+
+
 
 // Middleware
 app.use(cors());
@@ -160,6 +177,8 @@ app.post('/resend-verification', async (req, res) => {
 // User login route
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
+    const APIKEY = process.env.API_KEY;
+    console.log(APIKEY);
 
     // Überprüfen, ob die E-Mail-Adresse im gültigen Format vorliegt
     if (!validator.isEmail(username)) {
